@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { dbConnect } from "@/config/dbconnect";
 import Doctor from "@/models/doctors";
 
-export async function POST(req: Request) {
+export async function POST(req) {
   const { location, specialization, consultType, symptoms } = await req.json();
   console.log(consultType, symptoms);
 

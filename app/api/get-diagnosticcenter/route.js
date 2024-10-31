@@ -59,7 +59,7 @@ curl -X POST http://localhost:3000/api/get-diagnosticcenter \
   }'
 */
 
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     const body = await req.json();
     const result = searchSchema.safeParse(body);
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     await dbConnect();
 
     // Build query object based on provided search criteria
-    const query: any = {};
+    const query = {};
 
     if (result.data.name) {
       query.name = { $regex: `.*${result.data.name}.*`, $options: 'i' };

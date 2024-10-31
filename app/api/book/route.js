@@ -3,7 +3,7 @@ import { dbConnect } from "@/config/dbconnect";
 // import Doctor from "@/models/doctors";
 import Appointment from "@/models/appointments";
 
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     const {
       patientId,

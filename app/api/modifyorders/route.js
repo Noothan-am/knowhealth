@@ -15,7 +15,7 @@ const modifyOrderSchema = z.object({
   message: "Either userId or diagnosticCenterId must be provided, but not both"
 });
 
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     const body = await req.json();
     const result = modifyOrderSchema.safeParse(body);

@@ -1,36 +1,6 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose from "mongoose";
 
-export interface IOrder extends Document {
-  orderId: string;
-  userId: string;
-  diagnosticCenterId: string;
-  tests: Array<{
-    name: string;
-    price: number;
-  }>;
-  packages?: Array<{
-    name: string;
-    testCount: number;
-    price: number;
-    tests: string[];
-  }>;
-  totalAmount: number;
-  status: "pending" | "confirmed" | "completed" | "cancelled";
-  paymentStatus: "pending" | "completed" | "failed";
-  appointmentDate: Date;
-  homeSampleCollection: boolean;
-  onlineReports: boolean;
-  address?: {
-    street: string;
-    city: string;
-    state: string;
-    pincode: string;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-const OrderSchema: Schema<IOrder> = new mongoose.Schema({
+const OrderSchema = new mongoose.Schema({
   orderId: {
     type: String,
     required: true,
@@ -114,5 +84,6 @@ const OrderSchema: Schema<IOrder> = new mongoose.Schema({
   }
 });
 
-export default mongoose.models.Order || 
-  mongoose.model<IOrder>("Order", OrderSchema);
+const Order = mongoose.models.Order || mongoose.model("Order", OrderSchema);
+
+export default Order;

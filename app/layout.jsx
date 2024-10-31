@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import { MapPin, User, ShoppingCart, Bell, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,

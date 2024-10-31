@@ -37,7 +37,7 @@ const modifyDiagnosticCenterSchema = z.object({
   image: z.object({}).optional()
 });
 
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     const body = await req.json();
     const result = modifyDiagnosticCenterSchema.safeParse(body);

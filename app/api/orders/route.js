@@ -28,7 +28,7 @@ const createOrderSchema = z.object({
   }).optional()
 });
 
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     const body = await req.json();
     const result = createOrderSchema.safeParse(body);
