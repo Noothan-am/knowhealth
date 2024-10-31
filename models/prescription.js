@@ -1,6 +1,20 @@
 import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 const PrescriptionSchema = new mongoose.Schema({
+  id: {
+    type: String,
+    default: uuidv4,
+    required: true,
+  },
+  userId: {
+    type: String,
+    required: true,
+  },
+  doctorId: {
+    type: String,
+    required: false,
+  },
   name: {
     type: String,
     required: true,
@@ -11,7 +25,7 @@ const PrescriptionSchema = new mongoose.Schema({
   },
   specialty: {
     type: String,
-    required: true,
+    required: false,
   },
   phone: {
     type: String,
@@ -24,6 +38,10 @@ const PrescriptionSchema = new mongoose.Schema({
   image: {
     type: Object,
     required: true,
+  },
+  description: {
+    type: String,
+    required: false
   },
   current: {
     type: Date,

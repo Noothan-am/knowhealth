@@ -1,46 +1,6 @@
-import mongoose, { Document, Schema } from "mongoose";
+const mongoose = require('mongoose');
 
-export interface IDiagnosticCenter extends Document {
-  id: string;
-  name: string;
-  email: string;
-  phoneNo: {
-    value: string;
-    isVerified: boolean;
-  };
-  password: string;
-  address: string;
-  city: string;
-  state: string;
-  pincode: string;
-  rating: number;
-  tests: Array<{
-    name: string;
-    price: number;
-    description: string;
-  }>;
-  certifications: string[];
-  accreditations: string[];
-  packages: Array<{
-    name: string;
-    testCount: number;
-    price: number;
-    tests: string[];
-  }>;
-  services: {
-    homeSampleCollection: boolean;
-    onlineReports: boolean;
-  };
-  specialities: string[];
-  image?: object;
-}
-
-const DiagnosticCenterSchema: Schema<IDiagnosticCenter> = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-    unique: true,
-  },
+const DiagnosticCenterSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -141,5 +101,4 @@ const DiagnosticCenterSchema: Schema<IDiagnosticCenter> = new mongoose.Schema({
   },
 });
 
-export default mongoose.models.DiagnosticCenter ||
-  mongoose.model<IDiagnosticCenter>("DiagnosticCenter", DiagnosticCenterSchema);
+module.exports = mongoose.models.DiagnosticCenter || mongoose.model('DiagnosticCenter', DiagnosticCenterSchema);

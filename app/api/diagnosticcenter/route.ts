@@ -1,9 +1,8 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { dbConnect } from "@/config/dbconnect";
+import dbConnect from "@/config/dbconnect";
 import DiagnosticCenter from "@/models/diagnosticCenter";
 import { NextResponse } from "next/server";
-
 
 // when creating a diagnostic center, only these fields are mandatory:
 // id
@@ -109,7 +108,6 @@ import { NextResponse } from "next/server";
   ]
 ]; */
 
-
 const createDiagnosticCenterSchema = z.object({
     id: z.string().min(1, "ID must be at least 1 character"),
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -145,7 +143,7 @@ const createDiagnosticCenterSchema = z.object({
     image: z.object({}).optional(),
 });
 
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     const body = await req.json();
     const result = createDiagnosticCenterSchema.safeParse(body);

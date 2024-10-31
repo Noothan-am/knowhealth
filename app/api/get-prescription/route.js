@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { dbConnect } from "@/config/dbconnect";
-import Prescription from "@/models/prescription";
+import dbConnect from "@/config/dbconnect";
+import Prescription from "../../models/prescription";
+
 /*
 Test with:
 curl -X POST http://localhost:3000/api/get-prescription \
@@ -36,9 +37,7 @@ Response will be an array of prescriptions like:
   }
 ]
 */
-
-
-export async function POST(req: Request) {
+export async function POST(req) {
   const { userId, doctorId } = await req.json();
   console.log("Fetching prescriptions for:", userId ? `User ${userId}` : `Doctor ${doctorId}`);
 
