@@ -33,12 +33,16 @@ const PrescriptionSchema = new mongoose.Schema({
     required: true,
   },
   image: {
-    type: Object,
+    type: String,
     required: true,
   },
   description: {
     type: String,
     required: false,
+  },
+  date: {
+    type: Date,
+    required: true,
   },
   current: {
     type: Date,
@@ -47,5 +51,5 @@ const PrescriptionSchema = new mongoose.Schema({
   },
 });
 
-const Prescription = mongoose.model("Prescription", PrescriptionSchema);
-export default Prescription;
+export default mongoose.models.Prescription ||
+  mongoose.model("Prescription", PrescriptionSchema);

@@ -16,13 +16,13 @@ export async function POST(request) {
       { status: 500 }
     );
   }
-  // const { response } = uploadPrescription(finalUrl, formData);
-  // if (!response) {
-  //   return NextResponse.json(
-  //     { error: "Failed to upload file" },
-  //     { status: 500 }
-  //   );
-  // }
+  const { response } = uploadPrescription(finalUrl, formData);
+  if (!response) {
+    return NextResponse.json(
+      { error: "Failed to add in database" },
+      { status: 500 }
+    );
+  }
   return NextResponse.json(
     { message: "Prescription added successfully" },
     { status: 201 }

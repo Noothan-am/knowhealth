@@ -1,6 +1,8 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { nanoid } from "nanoid";
+import dbConnect from "@/config/dbconnect";
+import Prescription from "@/models/prescription";
 
 export async function handleFile(formData) {
   try {
@@ -40,7 +42,7 @@ export async function handleFile(formData) {
     });
 
     const response = await uploadResponse.text();
-    console.log(response);
+    console.log(uploadResponse.ok);
 
     if (uploadResponse.ok) {
       console.log("File uploaded successfully");
@@ -64,38 +66,42 @@ export const uploadPrescription = async (finalUrl, formData) => {
   const specialty = formData.get("specialty");
   const phone = formData.get("phone");
   const email = formData.get("email");
-  const image = formData.get("image");
-  const description = formData.get("description");
+  const date = formData.get("date");
+  const description = formData.get("additional-info");
 
-  if (!userId || !name || !age || !phone || !email || !image) {
-    return NextResponse.json(
-      { error: "Required fields are missing" },
-      { status: 400 }
-    );
+  if (!name || !age || !phone || !email || !specialty) {
+    console.log("Please add all values");
+
+    return {
+      response: false,
+      message: "please add all values",
+    };
   }
 
   try {
     const newPrescription = new Prescription({
-      userId,
-      doctorId,
       name,
       age,
       specialty,
       phone,
       email,
+      date,
       image: finalUrl,
       description,
     });
+    console.log(newPrescription);
+
     await newPrescription.save();
+
     return {
       response: true,
       message: "Prescription added to database successfully",
     };
   } catch (error) {
-    console.error(error);
-    {
-      response: false;
-      message: error;
-    }
+    console.error(error.message);
+    return {
+      response: false,
+      message: error.message,
+    };
   }
 };

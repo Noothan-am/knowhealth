@@ -55,6 +55,7 @@ const UploadPrescriptionPage = () => {
   const [date, setDate] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [specialty, setSpecialty] = useState(""); // Added specialty state
 
   const [ageError, setAgeError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -83,9 +84,9 @@ const UploadPrescriptionPage = () => {
 
   const handlePhoneChange = (e) => {
     const value = e.target.value;
-    const regex = /^[0-9]*$/; // Only numbers
+    const regex = /^[0-9]*$/;
     if (value === "" || (value.length <= 10 && regex.test(value))) {
-      setPhoneError(""); // Clear error if valid
+      setPhoneError("");
     } else {
       setPhoneError("Please enter a valid 10-digit phone number");
     }
@@ -94,21 +95,27 @@ const UploadPrescriptionPage = () => {
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (emailRegex.test(value) || value === "") {
-      setEmailError(""); // Clear error if valid
+      setEmailError("");
     } else {
       setEmailError("Please enter a valid email address");
     }
     setEmail(value);
   };
 
+  const handleSpecialtyChange = (e) => {
+    setSpecialty(e.target.value);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!age || ageError || !date || phoneError || emailError) {
+    if (!age || ageError || !date || phoneError || emailError || !specialty) {
       showToast("Please fix the errors before submitting.", "error");
       return;
     }
+    console.log(event.target);
+
     const formData = new FormData(event.target);
     formData.append("file", file);
 
@@ -208,6 +215,18 @@ const UploadPrescriptionPage = () => {
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   max={new Date().toISOString().split("T")[0]} // Set max to today's date
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="specialty">Specialty:</Label>
+                <Input
+                  id="specialty"
+                  name="specialty"
+                  value={specialty}
+                  onChange={handleSpecialtyChange}
+                  placeholder="Enter specialty"
                   required
                 />
               </div>
