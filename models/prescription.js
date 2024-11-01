@@ -9,11 +9,9 @@ const PrescriptionSchema = new mongoose.Schema({
   },
   userId: {
     type: String,
-    required: true,
   },
   doctorId: {
     type: String,
-    required: false,
   },
   name: {
     type: String,
@@ -25,7 +23,6 @@ const PrescriptionSchema = new mongoose.Schema({
   },
   specialty: {
     type: String,
-    required: false,
   },
   phone: {
     type: String,
@@ -41,7 +38,7 @@ const PrescriptionSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: false
+    required: false,
   },
   current: {
     type: Date,

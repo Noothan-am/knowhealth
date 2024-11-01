@@ -1,48 +1,32 @@
 import { NextResponse } from "next/server";
-import Prescription from "../../models/prescription";
-import dbConnect from "../../config/dbconnect";
+import Prescription from "@/models/prescription";
+import dbConnect from "@/config/dbconnect";
+import { handleFile, uploadPrescription } from "@/app/api/prescription/index";
 
 export async function POST(request) {
-  await dbConnect();
   const formData = await request.formData();
-  const userId = formData.get("userId");
-  const doctorId = formData.get("doctorId");
-  const name = formData.get("name");
-  const age = formData.get("age");
-  const specialty = formData.get("specialty");
-  const phone = formData.get("phone");
-  const email = formData.get("email");
-  const image = formData.get("image");
-  const description = formData.get("description");
+  const d = new FormData();
+  d.append("file", formData.get("file"));
+  const { finalUrl, success } = await handleFile(d);
+  console.log(finalUrl, success);
 
-  if (!userId || !name || !age || !phone || !email || !image) {
-    return NextResponse.json({ error: "Required fields are missing" }, { status: 400 });
-  }
-
-  try {
-    const newPrescription = new Prescription({
-      userId,
-      doctorId,
-      name,
-      age,
-      specialty,
-      phone,
-      email,
-      image,
-      description
-    });
-    await newPrescription.save();
+  if (!success) {
     return NextResponse.json(
-      { message: "Prescription added successfully", id: newPrescription.id },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Failed to upload file" },
       { status: 500 }
     );
   }
+  // const { response } = uploadPrescription(finalUrl, formData);
+  // if (!response) {
+  //   return NextResponse.json(
+  //     { error: "Failed to upload file" },
+  //     { status: 500 }
+  //   );
+  // }
+  return NextResponse.json(
+    { message: "Prescription added successfully" },
+    { status: 201 }
+  );
 }
 
 export async function GET(request) {
