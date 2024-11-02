@@ -6,58 +6,11 @@ import { NextResponse } from "next/server";
 const searchSchema = z.object({
   name: z.string().optional(),
   tests: z.array(z.string()).optional(),
+  packages: z.array(z.string()).optional(),
   specialities: z.array(z.string()).optional(),
   pincode: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
   rating: z.number().optional()
 });
-
-/*
-Test with:
-
-1. Search by name:
-curl -X POST http://localhost:3000/api/get-diagnosticcenter \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Metro"
-  }'
-
-2. Search by tests and rating:
-curl -X POST http://localhost:3000/api/get-diagnosticcenter \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tests": ["Blood Sugar", "Lipid Profile"],
-    "rating": 4
-  }'
-
-3. Search by location:
-curl -X POST http://localhost:3000/api/get-diagnosticcenter \
-  -H "Content-Type: application/json" \
-  -d '{
-    "city": "Mumbai",
-    "state": "Maharashtra",
-    "pincode": "400001"
-  }'
-
-4. Search by specialities:
-curl -X POST http://localhost:3000/api/get-diagnosticcenter \
-  -H "Content-Type: application/json" \
-  -d '{
-    "specialities": ["Molecular Diagnostics", "Genetic Testing"]
-  }'
-
-5. Combined search:
-curl -X POST http://localhost:3000/api/get-diagnosticcenter \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Health",
-    "city": "Mumbai",
-    "rating": 4,
-    "tests": ["COVID-19"],
-    "specialities": ["Molecular Diagnostics"]
-  }'
-*/
 
 export async function POST(req) {
   try {
@@ -83,17 +36,11 @@ export async function POST(req) {
     if (result.data.specialities?.length) {
       query.specialities = { $in: result.data.specialities };
     }
-
+    if (result.data.packages?.length) {
+      query['packages.name'] = { $in: result.data.packages };
+    }
     if (result.data.pincode) {
       query.pincode = result.data.pincode;
-    }
-
-    if (result.data.city) {
-      query.city = { $regex: result.data.city, $options: 'i' };
-    }
-
-    if (result.data.state) {
-      query.state = { $regex: result.data.state, $options: 'i' };
     }
 
     // Select only required fields

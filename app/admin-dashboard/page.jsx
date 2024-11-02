@@ -9,6 +9,8 @@ import DiagnosticCenterList from './DiagnosticCenterList.jsx'
 import BannerManagement from './BannerManagement.jsx'
 import AddDoctorForm from './AddDoctorForm.jsx'
 import AddDiagnosticCenterForm from './AddDiagnosticCenterForm.jsx'
+import AddTestOrPackageForm from './add-test-or-package-form.jsx'
+
 
 const AdminDashboard = () => {
   const [showAddDoctor, setShowAddDoctor] = useState(false)
