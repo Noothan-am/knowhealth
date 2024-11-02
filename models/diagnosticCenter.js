@@ -1,6 +1,12 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 const DiagnosticCenterSchema = new mongoose.Schema({
+  id: {
+    type: String,
+    default: uuidv4,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -48,6 +54,11 @@ const DiagnosticCenterSchema = new mongoose.Schema({
     default: 0,
   },
   tests: [{
+    id: {
+      type: String,
+      default: uuidv4,
+      required: true,
+    },
     name: {
       type: String,
     },
@@ -57,6 +68,14 @@ const DiagnosticCenterSchema = new mongoose.Schema({
     description: {
       type: String,
     },
+    speciality: {
+      type: String,
+      required: false
+    },
+    image: {
+      type: String,
+      required: false
+    }
   }],
   certifications: [{
     type: String
@@ -65,6 +84,11 @@ const DiagnosticCenterSchema = new mongoose.Schema({
     type: String
   }],
   packages: [{
+    id: {
+      type: String,
+      default: uuidv4,
+      required: true,
+    },
     name: {
       type: String,
       required: false
@@ -77,6 +101,14 @@ const DiagnosticCenterSchema = new mongoose.Schema({
       type: Number,
       required: false
     },
+    image: {
+      type: String,
+      required: false
+    },
+    specialities: [{
+      type: String,
+      required: false
+    }],
     tests: [{
       type: String,
       required: false
@@ -96,9 +128,12 @@ const DiagnosticCenterSchema = new mongoose.Schema({
     type: String
   }],
   image: {
-    type: Object,
+    type: String,
     required: false
   },
+  timings: {
+    type: Object,
+    required: false
+  } 
 });
-
-module.exports = mongoose.models.DiagnosticCenter || mongoose.model('DiagnosticCenter', DiagnosticCenterSchema);
+export default mongoose.models.DiagnosticCenter || mongoose.model('DiagnosticCenter', DiagnosticCenterSchema);
