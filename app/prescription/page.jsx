@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useContext, createContext } from "react";
+import React, { useState, useContext, useEffect, createContext } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -137,6 +137,30 @@ const UploadPrescriptionPage = () => {
     }
   };
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch("/api/prescription", {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok");
+  //       }
+
+  //       const data = await response.json();
+  //       console.log(data);
+  //     } catch (error) {
+  //       console.error("There was a problem with the fetch operation:", error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
   return (
     <div className="min-h-screen bg-gray-100 py-12">
       <div className="container mx-auto px-4">
@@ -205,7 +229,6 @@ const UploadPrescriptionPage = () => {
                 {ageError && <p style={{ color: "red" }}>{ageError}</p>}
               </div>
 
-              {/* Date Picker Component */}
               <div className="space-y-2">
                 <Label htmlFor="date">Select Prescription Date:</Label>
                 <Input
@@ -214,7 +237,7 @@ const UploadPrescriptionPage = () => {
                   name="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  max={new Date().toISOString().split("T")[0]} // Set max to today's date
+                  max={new Date().toISOString().split("T")[0]}
                   required
                 />
               </div>

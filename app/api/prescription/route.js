@@ -33,6 +33,14 @@ export async function GET(request) {
   await dbConnect();
   try {
     const prescriptions = await Prescription.find().sort({ current: -1 });
+    if (!prescriptions) {
+      return NextResponse.json(
+        { error: "No prescriptions found" },
+        { status: 404 }
+      );
+    }
+    console.log("sdkjlf", prescriptions);
+
     return NextResponse.json(prescriptions, { status: 200 });
   } catch (error) {
     console.error(error);
