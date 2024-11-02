@@ -1,4 +1,3 @@
-
 'use client'
 import React, { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -9,12 +8,13 @@ import DiagnosticCenterList from './DiagnosticCenterList.jsx'
 import BannerManagement from './BannerManagement.jsx'
 import AddDoctorForm from './AddDoctorForm.jsx'
 import AddDiagnosticCenterForm from './AddDiagnosticCenterForm.jsx'
-import AddTestOrPackageForm from './add-test-or-package-form.jsx'
+import DiagnosticCenterDetails from './DiagnosticCenterDetails.jsx'
 
 
 const AdminDashboard = () => {
   const [showAddDoctor, setShowAddDoctor] = useState(false)
   const [showAddDiagnosticCenter, setShowAddDiagnosticCenter] = useState(false)
+  const [selectedCenterId, setSelectedCenterId] = useState(null)
 
   return (
     <div className="container mx-auto p-4">
@@ -47,8 +47,15 @@ const AdminDashboard = () => {
           </div>
           {showAddDiagnosticCenter ? (
             <AddDiagnosticCenterForm onClose={() => setShowAddDiagnosticCenter(false)} />
+          ) : selectedCenterId ? (
+            <DiagnosticCenterDetails 
+              centerId={selectedCenterId}
+              onBack={() => setSelectedCenterId(null)}
+            />
           ) : (
-            <DiagnosticCenterList />
+            <DiagnosticCenterList 
+              onSelectCenter={(centerId) => setSelectedCenterId(centerId)}
+            />
           )}
         </TabsContent>
         <TabsContent value="banners">

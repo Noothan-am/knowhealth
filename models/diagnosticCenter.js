@@ -112,7 +112,11 @@ const DiagnosticCenterSchema = new mongoose.Schema({
     tests: [{
       type: String,
       required: false
-    }]
+    }],
+    description: {
+      type: String,
+      required: false
+    }
   }],
   services: {
     homeSampleCollection: {

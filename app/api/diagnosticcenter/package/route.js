@@ -17,7 +17,8 @@ const addPackageSchema = z.object({
     price: z.number().min(0, "Price must be a positive number"),
     image: z.string().optional(),
     specialities: z.array(z.string()).default([]),
-    tests: z.array(z.string()).default([])
+    tests: z.array(z.string()).default([]),
+    description: z.string().min(2, "Description must be at least 2 characters")
   }),
 });
 

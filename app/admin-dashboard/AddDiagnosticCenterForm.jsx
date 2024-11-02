@@ -1,10 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
 import { z } from "zod"
+import { StarRating } from "@/components/ui/star-rating"// Assuming you have a StarRating component
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 const createDiagnosticCenterSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -19,55 +22,56 @@ const createDiagnosticCenterSchema = z.object({
     state: z.string().min(2, "State must be at least 2 characters"),
     pincode: z.string().regex(/^\d{6}$/, "Invalid pincode"),
     rating: z.number().min(0).max(5, "Rating must be between 0 and 5").default(0),
-    certifications: z.array(z.string()).default([]),
-    accreditations: z.array(z.string()).default([]),
+    certifications: z.string().optional(),
+    accreditations: z.string().optional(),
     services: z.object({
         homeSampleCollection: z.boolean(),
         onlineReports: z.boolean(),
     }).default({ homeSampleCollection: false, onlineReports: false }),
-    specialities: z.array(z.string()).default([]),
+    specialities: z.string().optional(),
     timings: z.object({}).optional(),
 });
 
 const AddDiagnosticCenterForm = ({ onClose }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phoneNo: { value: '', isVerified: false },
-    password: '',
-    address: '',
-    city: '',
-    state: '',
-    pincode: '',
-    rating: 0,
-    certifications: [],
-    accreditations: [],
-    services: { homeSampleCollection: false, onlineReports: false },
-    specialities: [],
-    timings: {},
-  });
-
   const [image, setImage] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
+  const { register, handleSubmit, formState: { errors }, setValue, watch, trigger } = useForm({
+    resolver: zodResolver(createDiagnosticCenterSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      phoneNo: { value: '', isVerified: false },
+      password: '',
+      address: '',
+      city: '',
+      state: '',
+      pincode: '',
+      rating: 0,
+      certifications: '',
+      accreditations: '',
+      services: { homeSampleCollection: false, onlineReports: false },
+      specialities: '',
+      timings: {},
+    },
+    mode: 'onChange'
+  });
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const onSubmit = async (data) => {
     try {
-      const validatedData = createDiagnosticCenterSchema.parse(formData);
-      
+      // Convert comma-separated strings to arrays
+      const formattedData = {
+        ...data,
+        accreditations: data.accreditations ? data.accreditations.split(',').map(item => item.trim()) : [],
+        certifications: data.certifications ? data.certifications.split(',').map(item => item.trim()) : [],
+        specialities: data.specialities ? data.specialities.split(',').map(item => item.trim()) : [],
+      };
+
       const formDataToSend = new FormData();
-      formDataToSend.append('data', JSON.stringify(validatedData));
+      formDataToSend.append('data', JSON.stringify(formattedData));
       if (image) {
         formDataToSend.append('image', image);
       }
@@ -85,65 +89,126 @@ const AddDiagnosticCenterForm = ({ onClose }) => {
         console.error('Error adding Diagnostic Center:', errorData.error);
       }
     } catch (error) {
-      console.error('Validation error:', error.errors);
+      console.error('Error:', error);
     }
   };
 
+  useEffect(() => {
+    const subscription = watch((value, { name, type }) => {
+      if (type === 'change') {
+        trigger(name);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, trigger]);
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <Label htmlFor="name">Name</Label>
-        <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
+        <Input id="name" {...register("name")} />
+        {errors.name && <p className="text-red-500">{errors.name.message}</p>}
       </div>
       <div>
         <Label htmlFor="email">Email</Label>
-        <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required />
+        <Input id="email" type="email" {...register("email")} />
+        {errors.email && <p className="text-red-500">{errors.email.message}</p>}
       </div>
       <div>
         <Label htmlFor="phoneNo">Phone Number</Label>
-        <Input id="phoneNo" name="phoneNo.value" value={formData.phoneNo.value} onChange={handleChange} required />
+        <Input id="phoneNo" {...register("phoneNo.value")} />
+        {errors.phoneNo?.value && <p className="text-red-500">{errors.phoneNo.value.message}</p>}
       </div>
       <div>
         <Label htmlFor="password">Password</Label>
-        <Input id="password" name="password" type="password" value={formData.password} onChange={handleChange} required />
+        <Input id="password" type="password" {...register("password")} />
+        {errors.password && <p className="text-red-500">{errors.password.message}</p>}
       </div>
       <div>
         <Label htmlFor="address">Address</Label>
-        <Input id="address" name="address" value={formData.address} onChange={handleChange} required />
+        <Input id="address" {...register("address")} />
+        {errors.address && <p className="text-red-500">{errors.address.message}</p>}
       </div>
       <div>
         <Label htmlFor="city">City</Label>
-        <Input id="city" name="city" value={formData.city} onChange={handleChange} required />
+        <Input id="city" {...register("city")} />
+        {errors.city && <p className="text-red-500">{errors.city.message}</p>}
       </div>
       <div>
         <Label htmlFor="state">State</Label>
-        <Input id="state" name="state" value={formData.state} onChange={handleChange} required />
+        <Input id="state" {...register("state")} />
+        {errors.state && <p className="text-red-500">{errors.state.message}</p>}
       </div>
       <div>
         <Label htmlFor="pincode">Pincode</Label>
-        <Input id="pincode" name="pincode" value={formData.pincode} onChange={handleChange} required />
+        <Input id="pincode" {...register("pincode")} />
+        {errors.pincode && <p className="text-red-500">{errors.pincode.message}</p>}
       </div>
       <div>
-        <Label htmlFor="image">Image</Label>
+        <Label htmlFor="rating">Rating</Label>
+        <StarRating
+          id="rating"
+          value={watch("rating")}
+          onChange={(value) => {
+            setValue("rating", value);
+            trigger("rating");
+          }}
+        />
+        {errors.rating && <p className="text-red-500">{errors.rating.message}</p>}
+      </div>
+      <div>
+        <Label htmlFor="certifications">Certifications (comma-separated)</Label>
+        <Input id="certifications" {...register("certifications")} />
+      </div>
+      <div>
+        <Label htmlFor="accreditations">Accreditations (comma-separated)</Label>
+        <Input id="accreditations" {...register("accreditations")} />
+      </div>
+      <div>
+        <Label htmlFor="specialities">Specialities (comma-separated)</Label>
+        <Input id="specialities" {...register("specialities")} />
+      </div>
+      <div>
+        <Label htmlFor="image">Image (optional)</Label>
         <Input id="image" name="image" type="file" onChange={handleImageChange} />
       </div>
       <div className="flex items-center space-x-2">
         <Switch 
           id="homeSampleCollection" 
-          name="services.homeSampleCollection"
-          checked={formData.services.homeSampleCollection}
-          onCheckedChange={(checked) => setFormData(prev => ({...prev, services: {...prev.services, homeSampleCollection: checked}}))}
+          checked={watch("services.homeSampleCollection")}
+          onCheckedChange={(checked) => {
+            setValue("services.homeSampleCollection", checked);
+            trigger("services.homeSampleCollection");
+          }}
         />
         <Label htmlFor="homeSampleCollection">Home Sample Collection</Label>
       </div>
       <div className="flex items-center space-x-2">
         <Switch 
           id="onlineReports" 
-          name="services.onlineReports"
-          checked={formData.services.onlineReports}
-          onCheckedChange={(checked) => setFormData(prev => ({...prev, services: {...prev.services, onlineReports: checked}}))}
+          checked={watch("services.onlineReports")}
+          onCheckedChange={(checked) => {
+            setValue("services.onlineReports", checked);
+            trigger("services.onlineReports");
+          }}
         />
         <Label htmlFor="onlineReports">Online Reports</Label>
+      </div>
+      <div>
+        <Label htmlFor="timings">Timings (JSON format)</Label>
+        <Textarea 
+          id="timings" 
+          {...register("timings")}
+          onChange={(e) => {
+            try {
+              const parsedTimings = JSON.parse(e.target.value);
+              setValue("timings", parsedTimings);
+              trigger("timings");
+            } catch (error) {
+              console.error('Invalid JSON for timings');
+            }
+          }} 
+        />
       </div>
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>

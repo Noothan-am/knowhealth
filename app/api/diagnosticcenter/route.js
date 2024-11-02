@@ -30,11 +30,10 @@ const createDiagnosticCenterSchema = z.object({
         onlineReports: z.boolean(),
     }).default({ homeSampleCollection: false, onlineReports: false }),
     specialities: z.array(z.string()).default([]),
-    timings: z.object({}).optional(),// time mon-sat 8:30-10:30
+    timings: z.object({}).optional(),
 });
 
 async function uploadImageToS3(imageFile, fileName) {
-  // Convert the file to buffer properly
   const fileBuffer = await imageFile.arrayBuffer();
   const buffer = Buffer.from(fileBuffer);
 
@@ -44,7 +43,7 @@ async function uploadImageToS3(imageFile, fileName) {
     Body: buffer,
     ContentType: imageFile.type || 'image/jpeg',
     ContentLength: buffer.length,
-    ACL: 'public-read' // Added back the ACL
+    ACL: 'public-read'
   };
 
   try {
@@ -137,3 +136,44 @@ export async function POST(req) {
     );
   }
 }
+
+export async function GET(req) {
+  try {
+    await dbConnect();
+
+    const diagnosticCenters = await DiagnosticCenter.find({}).select({
+      id: 1,
+      name: 1,
+      phoneNo: 1,
+      address: 1,
+      city: 1,
+      state: 1,
+      pincode: 1,
+      rating: 1,
+      services: 1,
+      specialities: 1,
+      image: 1,
+      tests: {
+        speciality: 1
+      },
+      _id: 0
+    });
+
+    if (!diagnosticCenters.length) {
+      return NextResponse.json(
+        { message: "No diagnostic centers found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(diagnosticCenters, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
+    

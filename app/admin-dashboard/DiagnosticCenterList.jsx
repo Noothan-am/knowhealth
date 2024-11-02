@@ -1,64 +1,36 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Trash2, Plus } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import AddTestOrPackageForm from './add-test-or-package-form.jsx'
+import AddTestForm from './add-test'
+import AddPackageForm from './add-package'
+import Image from 'next/image'
 
-const diagnosticCenters = [
-  {
-    id: '1234-5678-9012-3456',
-    name: 'HealthCare Diagnostics',
-    email: 'info@healthcarediagnostics.com',
-    phoneNo: { value: '9876543210', isVerified: true },
-    address: '123 Main St',
-    city: 'New York',
-    state: 'NY',
-    pincode: '100001',
-    rating: 4.5,
-    certifications: ['ISO 9001', 'NABL'],
-    accreditations: ['CAP', 'JCI'],
-    services: {
-      homeSampleCollection: true,
-      onlineReports: true,
-    },
-    specialities: ['Pathology', 'Radiology'],
-    image: 'https://example.com/image1.jpg',
-    timings: { 
-      day: "Mon-sat",
-      time: "08:00 AM - 08:00 PM"
-    },
-  },
-  {
-    id: '2345-6789-0123-4567',
-    name: 'City Medical Lab',
-    email: 'contact@citymedicallab.com',
-    phoneNo: { value: '9876543211', isVerified: true },
-    address: '456 Oak Ave',
-    city: 'Los Angeles',
-    state: 'CA',
-    pincode: '900001',
-    rating: 4.2,
-    certifications: ['ISO 15189'],
-    accreditations: ['COLA'],
-    services: {
-      homeSampleCollection: false,
-      onlineReports: true,
-    },
-    specialities: ['Hematology', 'Biochemistry'],
-    image: 'https://example.com/image2.jpg',
-    timings: {
-      day: "Mon-sat",
-      time: "07:00 AM - 07:00 PM"
-    },
-  },
-]
-
-const DiagnosticCenterList = () => {
+const DiagnosticCenterList = ({ onSelectCenter }) => {
+  const [diagnosticCenters, setDiagnosticCenters] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [formType, setFormType] = useState('test')
   const [selectedCenterId, setSelectedCenterId] = useState(null)
+
+  useEffect(() => {
+    const fetchDiagnosticCenters = async () => {
+      try {
+        const response = await fetch('/api/diagnosticcenter')
+        if (response.ok) {
+          const data = await response.json()
+          setDiagnosticCenters(data)
+        } else {
+          console.error('Failed to fetch diagnostic centers')
+        }
+      } catch (error) {
+        console.error('Error fetching diagnostic centers:', error)
+      }
+    }
+
+    fetchDiagnosticCenters()
+  }, [])
 
   const handleDelete = (id) => {
     // Implement delete functionality
@@ -85,21 +57,52 @@ const DiagnosticCenterList = () => {
   return (
     <div className="grid gap-4">
       {diagnosticCenters.map((center) => (
-        <div key={center.id} className="flex items-center justify-between bg-white rounded-lg shadow-md p-4">
-          <div>
-            <h3 className="text-lg font-semibold">{center.name}</h3>
-            <p className="text-gray-600">{center.address}, {center.city}, {center.state} - {center.pincode}</p>
-            <p className="text-gray-600">Phone: {center.phoneNo.value}</p>
-            <p className="text-gray-600">Rating: {center.rating}/5</p>
-            <p className="text-gray-600">Services: 
-              {center.services.homeSampleCollection ? ' Home Sample Collection' : ''}
-              {center.services.onlineReports ? ' Online Reports' : ''}
-            </p>
+        <div 
+          key={center.id} 
+          className="flex items-center justify-between bg-white rounded-lg shadow-md p-4 hover:bg-gray-50 cursor-pointer"
+          onClick={() => onSelectCenter(center.id)}
+        >
+          <div className="flex items-center">
+            <div className="mr-4">
+              {center.image && (
+                <Image
+                  src={center.image}
+                  alt={center.name}
+                  width={100}
+                  height={100}
+                  className="rounded-lg object-cover"
+                />
+              )}
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">{center.name}</h3>
+              <p className="text-gray-600">{center.address}, {center.city}, {center.state} - {center.pincode}</p>
+              <p className="text-gray-600">Phone: {center.phoneNo.value}</p>
+              <p className="text-gray-600">Rating: {center.rating}/5</p>
+              <p className="text-gray-600">Services: 
+                {center.services.homeSampleCollection ? ' Home Sample Collection' : ''}
+                {center.services.onlineReports ? ' Online Reports' : ''}
+              </p>
+              <div className="mt-2">
+                <p className="text-gray-600 font-semibold">Specialities:</p>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {center.specialities.map((speciality, index) => (
+                    <Badge key={index} variant="secondary">
+                      {speciality}
+                    </Badge>
+                  ))}
+                  {center.tests && center.tests.map((test, index) => (
+                    test.speciality && (
+                      <Badge key={`test-${index}`} variant="secondary">
+                        {test.speciality}
+                      </Badge>
+                    )
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <Badge variant="secondary">
-              {center.specialities.join(', ')}
-            </Badge>
+          <div className="flex items-center space-x-4" onClick={e => e.stopPropagation()}>
             <Button
               variant="outline"
               size="sm"
@@ -135,7 +138,11 @@ const DiagnosticCenterList = () => {
             <h2 className="text-xl font-semibold mb-4">
               Add {formType.charAt(0).toUpperCase() + formType.slice(1)} to {diagnosticCenters.find(c => c.id === selectedCenterId)?.name}
             </h2>
-            <AddTestOrPackageForm type={formType} onClose={handleCloseForm} />
+            {formType === 'test' ? (
+              <AddTestForm onClose={handleCloseForm} diagnosticCenterId={selectedCenterId} />
+            ) : (
+              <AddPackageForm onClose={handleCloseForm} diagnosticCenterId={selectedCenterId} />
+            )}
           </div>
         </div>
       )}

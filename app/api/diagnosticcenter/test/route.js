@@ -14,9 +14,8 @@ const addTestSchema = z.object({
     test: z.object({
         name: z.string().min(2, "Test name must be at least 2 characters"),
         price: z.number().min(0, "Price must be a positive number"),
-        description: z.string().min(2, "Description must be at least 2 characters"),
-        speciality: z.string().optional(),
-        image: z.string().optional(),
+        speciality: z.string(),
+        description: z.string().optional(),
     }),
 });
 

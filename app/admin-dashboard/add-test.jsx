@@ -25,12 +25,12 @@ import {
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 
-const formSchema = z.object({
+const testSchema = z.object({
   name: z.string().min(2, "Test name must be at least 2 characters"),
   price: z.number().min(0, "Price must be a positive number"),
-  description: z.string().min(2, "Description must be at least 2 characters"),
-  speciality: z.string().optional(),
-  image: z.instanceof(FileList).refine((files) => files.length > 0, "Image is required"),
+  description: z.string().optional(),
+  speciality: z.string(),
+  image: z.instanceof(FileList).optional(),
 })
 
 const specialities = [
@@ -46,42 +46,77 @@ const specialities = [
   "Genetics"
 ]
 
-const AddTestOrPackageForm = ({ type = 'test', onClose }) => {
+const AddTestForm = ({ onClose, diagnosticCenterId }) => {
   const { toast } = useToast()
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(testSchema),
     defaultValues: {
       name: "",
       price: 0,
       description: "",
-      speciality: undefined,
+      speciality: "",
     },
   })
 
-  const onSubmit = (values) => {
-    // Simulate API call
-    console.log(values)
-    toast({
-      title: `${type.charAt(0).toUpperCase() + type.slice(1)} added successfully`,
-      description: `${values.name} has been added to the diagnostic center.`,
-    })
-    onClose()
+  const onSubmit = async (values) => {
+    try {
+      const formData = new FormData();
+      if (values.image && values.image.length > 0) {
+        formData.append('image', values.image[0]);
+      }
+
+      const payload = {
+        diagnosticCenterId,
+        test: {
+          name: values.name,
+          price: Number(values.price),
+          speciality: values.speciality,
+          ...(values.description ? { description: values.description } : {})
+        }
+      };
+
+      formData.append('data', JSON.stringify(payload));
+
+      const response = await fetch('/api/diagnosticcenter/test', {
+        method: 'PUT',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Failed to add test`);
+      }
+
+      const data = await response.json();
+      toast({
+        title: data.message || `Test added successfully`,
+        description: `${values.name} has been added to the diagnostic center.`,
+      })
+      onClose()
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: error.message || `Failed to add test. Please try again.`,
+        variant: "destructive",
+      })
+    }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-h-[80vh] overflow-y-auto p-4">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{type.charAt(0).toUpperCase() + type.slice(1)} Name</FormLabel>
+              <FormLabel>Test Name</FormLabel>
               <FormControl>
-                <Input placeholder={`Enter ${type} name`} {...field} />
+                <Input placeholder="Enter test name" {...field} />
               </FormControl>
               <FormDescription>
-                The name of the {type} to be added.
+                The name of the test to be added.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -94,10 +129,16 @@ const AddTestOrPackageForm = ({ type = 'test', onClose }) => {
             <FormItem>
               <FormLabel>Price</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter price" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                <Input 
+                  type="number" 
+                  placeholder="Enter price" 
+                  {...field}
+                  value={field.value || ''}
+                  onChange={e => field.onChange(e.target.value ? parseFloat(e.target.value) : '')} 
+                />
               </FormControl>
               <FormDescription>
-                The price of the {type} in your local currency.
+                The price of the test in your local currency.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -108,12 +149,12 @@ const AddTestOrPackageForm = ({ type = 'test', onClose }) => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Description (Optional)</FormLabel>
               <FormControl>
-                <Textarea placeholder={`Enter ${type} description`} {...field} />
+                <Textarea placeholder="Enter test description" {...field} />
               </FormControl>
               <FormDescription>
-                A brief description of the {type}.
+                A brief description of the test.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -140,7 +181,7 @@ const AddTestOrPackageForm = ({ type = 'test', onClose }) => {
                 </SelectContent>
               </Select>
               <FormDescription>
-                The medical speciality associated with this {type}.
+                The medical speciality associated with this test.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -151,7 +192,7 @@ const AddTestOrPackageForm = ({ type = 'test', onClose }) => {
           name="image"
           render={({ field: { onChange, value, ...rest } }) => (
             <FormItem>
-              <FormLabel>Image</FormLabel>
+              <FormLabel>Image (Optional)</FormLabel>
               <FormControl>
                 <Input
                   type="file"
@@ -161,7 +202,7 @@ const AddTestOrPackageForm = ({ type = 'test', onClose }) => {
                 />
               </FormControl>
               <FormDescription>
-                Upload an image for the {type}.
+                Upload an image for the test.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -171,11 +212,11 @@ const AddTestOrPackageForm = ({ type = 'test', onClose }) => {
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit">Add {type.charAt(0).toUpperCase() + type.slice(1)}</Button>
+          <Button type="submit">Add Test</Button>
         </div>
       </form>
     </Form>
   )
 }
 
-export default AddTestOrPackageForm
+export default AddTestForm
