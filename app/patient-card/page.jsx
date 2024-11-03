@@ -1,22 +1,33 @@
-import React from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText } from 'lucide-react';
+import { Download, FileText } from "lucide-react";
 
 function PatientPrescriptionCard({ person }) {
   const handleDownload = () => {
     // In a real application, you would implement the actual download logic here
-    console.log('Downloading prescription:', person.prescriptionUrl);
+    console.log("Downloading prescription:", person.prescriptionUrl);
   };
 
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="flex flex-row items-center gap-4">
         <Avatar className="w-16 h-16">
-          <AvatarImage src={person.avatarUrl} alt={person.name} />
-          <AvatarFallback>{person.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+          {/* <AvatarImage src={person.avatarUrl} alt={person.name} /> */}
+          <AvatarFallback>
+            {person.name
+              .split(" ")
+              .map((n) => n[0])
+              .join("")}
+          </AvatarFallback>
         </Avatar>
         <div>
           <CardTitle>{person.name}</CardTitle>
@@ -29,14 +40,21 @@ function PatientPrescriptionCard({ person }) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <h3 className="text-sm font-medium text-gray-500">Prescription Date</h3>
+          <h3 className="text-sm font-medium text-gray-500">
+            Prescription Date
+          </h3>
           <p className="text-sm">{person.prescriptionDate}</p>
         </div>
         <div>
-          <h3 className="text-sm font-medium text-gray-500 mb-2">Prescription PDF</h3>
-          <div className="border rounded-lg overflow-hidden" style={{ height: '300px' }}>
-            <iframe 
-              src={person.prescriptionUrl} 
+          <h3 className="text-sm font-medium text-gray-500 mb-2">
+            Prescription PDF
+          </h3>
+          <div
+            className="border rounded-lg overflow-hidden"
+            style={{ height: "300px" }}
+          >
+            <iframe
+              src={person.prescriptionUrl}
               title="Prescription PDF"
               width="100%"
               height="100%"
@@ -66,7 +84,7 @@ export function ExampleUsage() {
     bloodType: "A+",
     prescriptionDate: "2023-06-15",
     prescriptionUrl: "/path/to/prescription.pdf",
-    avatarUrl: "https://example.com/avatar.jpg"
+    avatarUrl: "https://example.com/avatar.jpg",
   };
 
   return <PatientPrescriptionCard person={examplePerson} />;

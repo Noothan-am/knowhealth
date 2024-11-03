@@ -208,7 +208,6 @@ export default function MedicalDiagnosticsPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Banner Section */}
       <section className="relative h-64 bg-primary text-primary-foreground overflow-hidden">
         {banners.map((banner, index) => (
           <div
@@ -226,7 +225,7 @@ export default function MedicalDiagnosticsPage() {
               key={index}
               variant="outline"
               size="sm"
-              className={`w-2 h-1 p-0 rounded-sm ${
+              className={`w-1 h-2 p-1 rounded ${
                 currentBanner === index ? 'bg-primary-foreground' : 'bg-transparent'
               }`}
               onClick={() => handleBannerChange(index)}

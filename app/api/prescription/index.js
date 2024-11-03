@@ -59,8 +59,8 @@ export async function handleFile(formData) {
 
 export const uploadPrescription = async (finalUrl, formData) => {
   await dbConnect();
-  const userId = formData.get("userId");
-  const doctorId = formData.get("doctorId");
+  const Id = formData.get("id");
+  const who = formData.get("who");
   const name = formData.get("name");
   const age = formData.get("age");
   const specialty = formData.get("specialty");
@@ -88,6 +88,7 @@ export const uploadPrescription = async (finalUrl, formData) => {
       date,
       image: finalUrl,
       description,
+      ...(who === "doctor" ? { doctorId: Id } : { userId: Id }),
     });
     console.log(newPrescription);
 
