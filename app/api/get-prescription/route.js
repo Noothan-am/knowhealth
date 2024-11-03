@@ -38,19 +38,24 @@ Response will be an array of prescriptions like:
 ]
 */
 export async function POST(req) {
-  const { userId, doctorId } = await req.json();
-  console.log("Fetching prescriptions for:", userId ? `User ${userId}` : `Doctor ${doctorId}`);
+  const { id, who } = await req.json();
+  console.log(
+    "Fetching prescriptions for:",
+    userId ? `User ${id}` : `Doctor ${who}`
+  );
 
   try {
     await dbConnect();
     const prescriptions = await Prescription.find({
-      ...(userId ? { userId } : { doctorId }),
-    }).sort({ current: -1 }); // Sort by date in descending order to get latest first
+      ...(who !== "doctor" ? { userId } : { doctorId }),
+    }).sort({ current: -1 });
 
     if (prescriptions.length === 0) {
-      return NextResponse.json({ error: "No prescriptions found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "No prescriptions found" },
+        { status: 404 }
+      );
     }
-    // All prescriptions are already being returned in the response below
 
     return NextResponse.json(prescriptions, { status: 200 });
   } catch (error) {
