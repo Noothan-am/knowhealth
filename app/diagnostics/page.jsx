@@ -7,8 +7,9 @@ import { ChevronLeft, ChevronRight, Droplet, Beaker, Cookie, Heart, Brain, Syrin
 
 export default function MedicalDiagnosticsPage() {
   const [currentBanner, setCurrentBanner] = useState(0)
-  const [selectedCategory, setSelectedCategory] = useState(null)
+  const [selectedSpeciality, setSelectedSpeciality] = useState(null)
   const [selectedTest, setSelectedTest] = useState(null)
+  const [testResults, setTestResults] = useState([])
   const scrollRef = useRef(null)
 
   const banners = [
@@ -132,6 +133,7 @@ export default function MedicalDiagnosticsPage() {
     },
   ]
 
+
   const popularTests = [
     { name: "Complete Blood Count (CBC)", icon: Droplet, description: "Measures various components and features of blood." },
     { name: "Lipid Profile", icon: Heart, description: "Measures different types of fats in the blood." },
@@ -152,17 +154,45 @@ export default function MedicalDiagnosticsPage() {
     return () => clearInterval(timer)
   }, [])
 
+  useEffect(() => {
+    setSelectedSpeciality({
+      name: "Popular Tests",
+      tests: popularTests
+    })
+  }, [])
+
   const handleBannerChange = (index) => {
     setCurrentBanner(index)
   }
 
-  const handleCategoryClick = (category) => {
-    setSelectedCategory(category)
+  const handleSpecialityClick = (speciality) => {
+    setSelectedSpeciality(speciality)
     setSelectedTest(null)
+    setTestResults([])
   }
 
-  const handleTestClick = (test) => {
+  const handleTestClick = async (test) => {
     setSelectedTest(test)
+    try {
+      const response = await fetch('/api/get-diagnosticcenter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: test.name,
+          specialities: [selectedSpeciality.name],
+        }),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setTestResults(data)
+      } else {
+        console.error('Failed to fetch test results')
+      }
+    } catch (error) {
+      console.error('Error fetching test results:', error)
+    }
   }
 
   const handleScroll = (direction) => {
@@ -204,6 +234,7 @@ export default function MedicalDiagnosticsPage() {
           ))}
         </div>
       </section>
+
       {/* Call-to-Action Section */}
       <section className="bg-secondary text-secondary-foreground py-12">
         <div className="container mx-auto text-center">
@@ -213,57 +244,79 @@ export default function MedicalDiagnosticsPage() {
           </Button>
         </div>
       </section>
-    {/* Diagnostic Categories Section */}
-    <section className="py-12 bg-background">
-      <div className="container mx-auto">
-        <h2 className="text-3xl font-bold mb-4 text-center">Diagnostic Categories</h2> {/* Added left padding */}
-        <div
-          ref={scrollRef}
-          className="scrollable-area flex overflow-x-auto space-x-4 py-4 max-w-3xl mx-auto">
-          {diagnosticCategories.map((category, index) => (
-            <Button
-              key={index}
-              variant={selectedCategory === category ? "default" : "outline"}
-              className="flex-shrink-0"
-              onClick={() => handleCategoryClick(category)}
-            >
-              {category.name}
-            </Button>
-          ))}
-        </div>
-      </div>
-    </section>
 
-    {/* Selected Category Tests Section */}
-    <section className="py-12 bg-muted">
-      <div className="container mx-auto">
-        <h3 className="text-2xl font-bold mb-8 text-center"> {/* Added left padding */}
-          {selectedCategory ? `${selectedCategory.name} Tests` : "Popular Tests"}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {(selectedCategory ? selectedCategory.tests : popularTests).map((test, index) => (
-            <Card key={index} className="p-4">
+      {/* Specialities Section */}
+      <section className="py-12 bg-background">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold mb-4 text-center">Specialities</h2>
+          <div
+            ref={scrollRef}
+            className="scrollable-area flex overflow-x-auto space-x-4 py-4 max-w-3xl mx-auto">
+            {diagnosticCategories.map((category, index) => (
               <Button
-                variant="ghost"
-                className="w-full h-auto py-4 px-3 flex flex-col items-center justify-start space-y-2"
-                onClick={() => handleTestClick(test)}
+                key={index}
+                variant={selectedSpeciality === category ? "default" : "outline"}
+                className="flex-shrink-0"
+                onClick={() => handleSpecialityClick(category)}
               >
-                <div className="bg-primary/10 p-3 rounded-full">
-                  <test.icon className="h-8 w-8 text-primary" />
-                </div>
-                <span className="text-sm font-medium text-center">{test.name}</span>
+                {category.name}
               </Button>
-              {selectedTest === test && (
-                <div className="mt-4 text-sm text-muted-foreground">
-                  {test.description}
-                </div>
-              )}
-            </Card>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
+      {/* Tests Section */}
+      {selectedSpeciality && (
+        <section className="py-12 bg-muted">
+          <div className="container mx-auto">
+            <h3 className="text-2xl font-bold mb-8 text-center">
+              {selectedSpeciality.name} Tests
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {selectedSpeciality.tests.map((test, index) => (
+                <Card key={index} className="p-4">
+                  <Button
+                    variant="ghost"
+                    className="w-full h-auto py-4 px-3 flex flex-col items-center justify-start space-y-2"
+                    onClick={() => handleTestClick(test)}
+                  >
+                    <div className="bg-primary/10 p-3 rounded-full">
+                      <test.icon className="h-8 w-8 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium text-center">{test.name}</span>
+                  </Button>
+                  {selectedTest === test && (
+                    <div className="mt-4 text-sm text-muted-foreground">
+                      {test.description}
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Test Results Section */}
+      {testResults.length > 0 && (
+        <section className="py-12 bg-background">
+          <div className="container mx-auto">
+            <h3 className="text-2xl font-bold mb-8 text-center">Available Tests</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {testResults.map((result, index) => (
+                <Card key={index} className="p-4">
+                  <h4 className="text-lg font-semibold mb-2">{result.name}</h4>
+                  <p className="text-sm mb-2">Center: {result.diagnosticCenter.name}</p>
+                  <p className="text-sm mb-2">Price: ₹{result.price}</p>
+                  <p className="text-sm mb-4">Rating: {result.diagnosticCenter.rating}</p>
+                  <Button className="w-full">Book Now</Button>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   )
 }

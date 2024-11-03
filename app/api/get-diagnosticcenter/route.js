@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { dbConnect } from "@/config/dbconnect";
+import  dbConnect  from "@/config/dbconnect";
 import DiagnosticCenter from "@/models/diagnosticCenter";
 import { NextResponse } from "next/server";
 
@@ -27,51 +27,58 @@ export async function POST(req) {
     const query = {};
 
     if (result.data.name) {
-      query.name = { $regex: `.*${result.data.name}.*`, $options: 'i' };
+      query['tests.name'] = { $regex: `.*${result.data.name}.*`, $options: 'i' };
     }
 
     if (result.data.tests?.length) {
       query['tests.name'] = { $in: result.data.tests };
     }
     if (result.data.specialities?.length) {
-      query.specialities = { $in: result.data.specialities };
-    }
-    if (result.data.packages?.length) {
-      query['packages.name'] = { $in: result.data.packages };
+      query['tests.speciality'] = { $in: result.data.specialities };
     }
     if (result.data.pincode) {
       query.pincode = result.data.pincode;
     }
 
-    // Select only required fields
-    const centers = await DiagnosticCenter.find(query).select({
-      diagnosticCenterId: 1,
-      name: 1,
-      email: 1,
-      phoneNo: 1,
-      address: 1,
-      city: 1,
-      state: 1,
-      pincode: 1,
-      rating: 1,
-      tests: 1,
-      packages: 1,
-      certifications: 1,
-      accreditations: 1,
-      services: 1,
-      specialities: 1,
-      image: 1,
-      _id: 0
-    });
+    // Find diagnostic centers matching the criteria
+    const centers = await DiagnosticCenter.find(query);
 
     if (!centers.length) {
       return NextResponse.json(
-        { message: "No diagnostic centers found matching the criteria" },
+        { message: "No tests found matching the criteria" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(centers, { status: 200 });
+    // Extract and format test information
+    const tests = centers.flatMap(center => 
+      center.tests.map(test => ({
+        ...test.toObject(),
+        diagnosticCenter: {
+          id: center.id,
+          name: center.name,
+          email: center.email,
+          phoneNo: center.phoneNo,
+          address: center.address,
+          city: center.city,
+          state: center.state,
+          pincode: center.pincode,
+          rating: center.rating,
+          certifications: center.certifications,
+          accreditations: center.accreditations,
+          services: center.services,
+          specialities: center.specialities,
+          image: center.image
+        }
+      }))
+    );
+
+    // Apply rating filter if provided
+    if (result.data.rating) {
+      tests = tests.filter(test => test.diagnosticCenter.rating >= result.data.rating);
+    }
+
+    return NextResponse.json(tests, { status: 200 });
 
   } catch (error) {
     console.error(error);
