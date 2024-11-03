@@ -17,7 +17,13 @@ const DiagnosticCenterDetails = ({ centerId, onBack }) => {
   useEffect(() => {
     const fetchCenterDetails = async () => {
       try {
-        const response = await fetch(`/api/get-diagnosticcenter/${centerId}`)
+        const response = await fetch('/api/get-diagnosticcenter/id', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ centerId }),
+        })
         if (response.ok) {
           const data = await response.json()
           setCenter(data)
