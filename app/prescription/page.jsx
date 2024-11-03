@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Upload, FileText, X } from "lucide-react";
+import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import Dropdown from "@/components/ui/Dropdown";
 
 const ToastContext = createContext();
 
@@ -60,6 +62,8 @@ const UploadPrescriptionPage = () => {
   const [ageError, setAgeError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [Id, setId] = useState("");
+  const [who, setWho] = useState("");
 
   const { showToast } = useToast();
 
@@ -110,7 +114,16 @@ const UploadPrescriptionPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!age || ageError || !date || phoneError || emailError || !specialty) {
+    if (
+      !age ||
+      ageError ||
+      !date ||
+      phoneError ||
+      emailError ||
+      !specialty ||
+      !Id ||
+      !who
+    ) {
       showToast("Please fix the errors before submitting.", "error");
       return;
     }
@@ -118,6 +131,8 @@ const UploadPrescriptionPage = () => {
 
     const formData = new FormData(event.target);
     formData.append("file", file);
+    formData.append("id", Id);
+    formData.append("who", who);
 
     try {
       const response = await fetch("/api/prescription", {
@@ -252,6 +267,13 @@ const UploadPrescriptionPage = () => {
                   placeholder="Enter specialty"
                   required
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="dropdown">Patient:</Label>
+                <div>
+                  <Dropdown setId={setId} setWho={setWho} />
+                </div>
               </div>
 
               <div className="space-y-2">

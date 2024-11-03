@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { dbConnect } from "@/config/dbconnect";
+import dbConnect from "@/config/dbconnect";
 import Doctor from "@/models/doctors";
 import { NextResponse } from "next/server";
 
@@ -92,6 +92,24 @@ export async function POST(req) {
     console.error(error);
     return NextResponse.json(
       { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+export async function GET(request) {
+  try {
+    await dbConnect();
+    const doctors = await Doctor.find();
+
+    if (!doctors) {
+      return NextResponse.json({ error: "No doctors found" }, { status: 404 });
+    }
+
+    return NextResponse.json(doctors, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

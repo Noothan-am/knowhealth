@@ -15,26 +15,44 @@ const DiagnosticCenterList = ({ onSelectCenter }) => {
   const [selectedCenterId, setSelectedCenterId] = useState(null)
 
   useEffect(() => {
-    const fetchDiagnosticCenters = async () => {
-      try {
-        const response = await fetch('/api/diagnosticcenter')
-        if (response.ok) {
-          const data = await response.json()
-          setDiagnosticCenters(data)
-        } else {
-          console.error('Failed to fetch diagnostic centers')
-        }
-      } catch (error) {
-        console.error('Error fetching diagnostic centers:', error)
-      }
-    }
-
     fetchDiagnosticCenters()
   }, [])
 
-  const handleDelete = (id) => {
-    // Implement delete functionality
-    console.log(`Delete diagnostic center with id: ${id}`)
+  const fetchDiagnosticCenters = async () => {
+    try {
+      const response = await fetch('/api/diagnosticcenter')
+      if (response.ok) {
+        const data = await response.json()
+        setDiagnosticCenters(data)
+      } else {
+        console.error('Failed to fetch diagnostic centers')
+      }
+    } catch (error) {
+      console.error('Error fetching diagnostic centers:', error)
+    }
+  }
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch('/api/diagnosticcenter', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      })
+
+      if (response.ok) {
+        // Remove the deleted center from the state
+        setDiagnosticCenters(prevCenters => prevCenters.filter(center => center.id !== id))
+        console.log('Diagnostic center deleted successfully')
+      } else {
+        const errorData = await response.json()
+        console.error('Failed to delete diagnostic center:', errorData.error)
+      }
+    } catch (error) {
+      console.error('Error deleting diagnostic center:', error)
+    }
   }
 
   const handleAddTest = (id) => {

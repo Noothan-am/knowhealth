@@ -176,4 +176,38 @@ export async function GET(req) {
   }
 }
 
-    
+export async function DELETE(req) {
+  try {
+    await dbConnect();
+
+    const body = await req.json();
+    const { id } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Diagnostic Center ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const deletedCenter = await DiagnosticCenter.findOneAndDelete({ id: id });
+
+    if (!deletedCenter) {
+      return NextResponse.json(
+        { error: "Diagnostic Center not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Diagnostic Center deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
