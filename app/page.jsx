@@ -7,7 +7,6 @@ import Link from 'next/link'
 
 export default function Home() {
   const [currentBanner, setCurrentBanner] = useState(0);
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBanner((prev) => (prev + 1) % banners.length);
@@ -15,6 +14,7 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, []);
+
 
 
 

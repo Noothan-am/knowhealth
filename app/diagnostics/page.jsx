@@ -178,7 +178,6 @@ export default function MedicalDiagnosticsPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Banner Section */}
       <section className="relative h-64 bg-primary text-primary-foreground overflow-hidden">
         {banners.map((banner, index) => (
           <div
@@ -196,7 +195,7 @@ export default function MedicalDiagnosticsPage() {
               key={index}
               variant="outline"
               size="sm"
-              className={`w-2 h-1 p-0 rounded-sm ${
+              className={`w-1 h-2 p-1 rounded ${
                 currentBanner === index ? 'bg-primary-foreground' : 'bg-transparent'
               }`}
               onClick={() => handleBannerChange(index)}
@@ -236,34 +235,28 @@ export default function MedicalDiagnosticsPage() {
 
     {/* Selected Category Tests Section */}
     <section className="py-12 bg-muted">
-      <div className="container mx-auto">
-        <h3 className="text-2xl font-bold mb-8 text-center"> {/* Added left padding */}
-          {selectedCategory ? `${selectedCategory.name} Tests` : "Popular Tests"}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {(selectedCategory ? selectedCategory.tests : popularTests).map((test, index) => (
-            <Card key={index} className="p-4">
-              <Button
-                variant="ghost"
-                className="w-full h-auto py-4 px-3 flex flex-col items-center justify-start space-y-2"
-                onClick={() => handleTestClick(test)}
-              >
-                <div className="bg-primary/10 p-3 rounded-full">
-                  <test.icon className="h-8 w-8 text-primary" />
-                </div>
-                <span className="text-sm font-medium text-center">{test.name}</span>
-              </Button>
-              {selectedTest === test && (
-                <div className="mt-4 text-sm text-muted-foreground">
-                  {test.description}
-                </div>
-              )}
-            </Card>
-          ))}
+  <div className="container mx-auto">
+    <h3 className="text-2xl font-bold mb-8 text-center">
+      {selectedCategory ? `${selectedCategory.name} Tests` : "Popular Tests"}
+    </h3>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {(selectedCategory ? selectedCategory.tests : popularTests).map((test, index) => (
+        <Card key={index} className="p-2"> {/* Reduced padding */}
+          <Button
+            variant="ghost"
+            className="w-full h-auto py-2 px-2 flex flex-col items-center justify-start space-y-1"
+            onClick={() => handleTestClick(test)}
+          >
+            <div className="bg-primary/10 p-2 rounded-full"> 
+              <test.icon className="h-6 w-6 text-primary" /> 
+            </div>
+            <span className="text-sm font-medium text-center">{test.name}</span>
+          </Button>
+        </Card>
+      ))}
         </div>
       </div>
     </section>
-
     </div>
   )
 }
