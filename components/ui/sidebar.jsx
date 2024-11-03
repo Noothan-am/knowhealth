@@ -34,13 +34,11 @@ const NavItem = ({ name, icon, isActive, onClick }) => (
 
 const StatCard = ({ title, value, subtext, icon }) => (
   <Card>
-    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-      <CardTitle className="flex items-center text-sm font-medium space-x-2">
-        <span className="mr-2">{icon}</span>
-        {title}
-      </CardTitle>
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle className="text-sm font-medium">{title}</CardTitle>
+      {icon}
     </CardHeader>
-    <CardContent className="text-center">
+    <CardContent>
       <div className="text-2xl font-bold">{value}</div>
       <p className="text-xs text-muted-foreground">{subtext}</p>
     </CardContent>
@@ -79,7 +77,7 @@ const PatientItem = ({ name, lastVisit, condition }) => (
   </div>
 );
 
-export default function DoctorDashboard() {
+const DoctorDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
 
   const navItems = [
@@ -89,11 +87,6 @@ export default function DoctorDashboard() {
     { name: 'Consultations', icon: <Video className="w-5 h-5" /> },
     { name: 'Patient Prescriptions', icon: <FileText className="w-5 h-5" /> },
   ];
-
-  const handleLogout = () => {
-    // Implement logout logic here
-    console.log('Logging out...');
-  };
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -130,7 +123,7 @@ export default function DoctorDashboard() {
                 </SheetTrigger>
                 <SheetContent side="left">
                   <SheetHeader>
-                    <SheetTitle>Quick Lookup</SheetTitle>
+                    <SheetTitle>Dr. Dashboard</SheetTitle>
                   </SheetHeader>
                   <nav className="flex flex-col gap-4 mt-4">
                     {navItems.map((item) => (
@@ -142,16 +135,10 @@ export default function DoctorDashboard() {
                         onClick={() => setActiveTab(item.name.toLowerCase())}
                       />
                     ))}
-                    <NavItem
-                      name="Logout"
-                      icon={<LogOut className="w-5 h-5" />}
-                      isActive={false}
-                      onClick={handleLogout}
-                    />
                   </nav>
                 </SheetContent>
               </Sheet>
-              <Button variant="outline" className="hidden md:flex items-center" onClick={handleLogout}>
+              <Button variant="outline" className="hidden md:flex items-center">
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
@@ -160,7 +147,7 @@ export default function DoctorDashboard() {
         </header>
 
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          {/* Dashboard */}
+          {/* Dashboard Overview */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <StatCard
               title="Total Appointments"
@@ -201,6 +188,8 @@ export default function DoctorDashboard() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Recent Patients */}
           <Card className="mt-6">
             <CardHeader>
               <CardTitle>Recent Patients</CardTitle>
@@ -223,4 +212,6 @@ export default function DoctorDashboard() {
       </main>
     </div>
   );
-}
+};
+
+export default DoctorDashboard;

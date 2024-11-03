@@ -76,7 +76,7 @@ export default function Home() {
     {[
       { title: 'Consult a Doctor', icon: Stethoscope, color: '#4CAF50', link: '/doctor-dashboard' },
       { title: 'Diagnostics & Lab tests', icon: Microscope, color: '#2196F3', link: '/diagnostics' },
-      { title: 'Upload a Prescription', icon: FileText, color: '#FFC107', link: '/upload-a-prescription'},
+      { title: 'Upload a Prescription', icon: FileText, color: '#FFC107', link: '/prescription'},
       { title: 'Surgery Support', icon: Scissors, color: '#9C27B0', link: '/admin_dashboard' },
       { title: 'Patient Dashboard', icon: LayoutDashboard, color: '#FF5722', link: '/patient-dashboard' },
     ].map((option, index) => (
