@@ -121,9 +121,9 @@ export default function MedicalDiagnosticsPage() {
       ]
     },
     {
-      name: "Genetics",
+      name: "MRI",
       tests: [
-        { name: "Genetic Carrier Screening", icon: Apple, description: "Identifies if a person carries a genetic disorder." },
+        { name: "Full Body MRI Scan", icon: Apple, description: "Identifies if a person carries a genetic disorder." },
         { name: "Prenatal Genetic Testing", icon: Apple, description: "Screens for genetic disorders in a fetus." },
         { name: "Whole Exome Sequencing", icon: Apple, description: "Analyzes the protein-coding regions of the genome." },
         { name: "Tumor Genetic Profiling", icon: Apple, description: "Assesses genetic mutations in tumors." },
@@ -137,7 +137,7 @@ export default function MedicalDiagnosticsPage() {
   const popularTests = [
     { name: "Complete Blood Count (CBC)", icon: Droplet, description: "Measures various components and features of blood." },
     { name: "Lipid Profile", icon: Heart, description: "Measures different types of fats in the blood." },
-    { name: "Urinalysis", icon: Beaker, description: "Analyzes urine for various health indicators." },
+    { name: "Brain CT Scan", icon: Beaker, description: "Analyzes urine for various health indicators." },
     { name: "Electrocardiogram (ECG/EKG)", icon: Heart, description: "Records electrical activity of the heart." },
     { name: "X-Ray", icon: Bone, description: "Produces images of structures inside the body." },
     { name: "Magnetic Resonance Imaging (MRI)", icon: Brain, description: "Uses magnetic fields to create detailed images." },

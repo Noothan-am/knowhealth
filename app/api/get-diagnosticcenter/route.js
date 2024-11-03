@@ -73,11 +73,6 @@ export async function POST(req) {
       }))
     );
 
-    // Apply rating filter if provided
-    if (result.data.rating) {
-      tests = tests.filter(test => test.diagnosticCenter.rating >= result.data.rating);
-    }
-
     return NextResponse.json(tests, { status: 200 });
 
   } catch (error) {
