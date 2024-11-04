@@ -57,7 +57,7 @@ const UploadPrescriptionPage = () => {
   const [date, setDate] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [specialty, setSpecialty] = useState(""); // Added specialty state
+  const [specialty, setSpecialty] = useState("");
 
   const [ageError, setAgeError] = useState("");
   const [phoneError, setPhoneError] = useState("");

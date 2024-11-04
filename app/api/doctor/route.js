@@ -114,3 +114,27 @@ export async function GET(request) {
     );
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const formData = await request.formData();
+    const id = formData.get("id");
+    await dbConnect();
+    const doctor = await Doctor.findOneAndDelete({ id });
+
+    if (!doctor) {
+      return NextResponse.json({ error: "Doctor not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { message: "Doctor deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

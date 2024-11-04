@@ -16,11 +16,13 @@ import { Label } from "@/components/ui/label";
 
 export default function SignupPage() {
   const [activeTab, setActiveTab] = useState("consumer");
+  const [image, setImage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     formData.append("activeTab", activeTab);
+    formData.append("file", image);
 
     try {
       const response = await fetch("/api/signup", {
@@ -38,6 +40,10 @@ export default function SignupPage() {
     } catch (error) {
       console.error("There was a problem with the signup request:", error);
     }
+  };
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
   };
 
   return (
@@ -106,6 +112,17 @@ export default function SignupPage() {
                       name="confirmPassword"
                       type="password"
                       placeholder="Confirm your password"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="consumer-image">Image</Label>
+                    <Input
+                      id="consumer-image"
+                      name="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
                       required
                     />
                   </div>
@@ -178,6 +195,17 @@ export default function SignupPage() {
                       id="doctor-specialization"
                       name="specialization"
                       placeholder="Enter your specialization"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="doctor-image">Image</Label>
+                    <Input
+                      id="doctor-image"
+                      name="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
                       required
                     />
                   </div>

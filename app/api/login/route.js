@@ -24,7 +24,7 @@ export async function POST(request) {
 
   let user;
   if (activeTab === "consumer") {
-    user = await User.findOne({ email });
+    user = await User.findOne({ email }).select("-password");
   } else if (activeTab === "doctor") {
     user = await Doctor.findOne({ email });
     console.log(user);
@@ -44,5 +44,8 @@ export async function POST(request) {
     return NextResponse.json({ error: "Invalid password" }, { status: 401 });
   }
 
-  return NextResponse.json({ message: "Login successful" }, { status: 200 });
+  return NextResponse.json(
+    { user, message: "Login successful" },
+    { status: 200 }
+  );
 }

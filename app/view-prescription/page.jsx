@@ -31,8 +31,12 @@ export default function PrescriptionList() {
 
   const filteredPrescriptions = allPrescriptions.filter(
     (prescription) =>
-      prescription.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prescription.medication.toLowerCase().includes(searchTerm.toLowerCase())
+      (prescription.name &&
+        prescription.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (prescription.medication &&
+        prescription.medication
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()))
   );
 
   useEffect(() => {
