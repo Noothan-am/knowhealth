@@ -1,20 +1,33 @@
-'use client'
-import React, { useState } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from 'lucide-react'
-import DoctorList from './DoctorList.jsx'
-import DiagnosticCenterList from './DiagnosticCenterList.jsx'
-import BannerManagement from './BannerManagement.jsx'
-import AddDoctorForm from './AddDoctorForm.jsx'
-import AddDiagnosticCenterForm from './AddDiagnosticCenterForm.jsx'
-import DiagnosticCenterDetails from './DiagnosticCenterDetails.jsx'
-
+"use client";
+import React, { useEffect, useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { PlusCircle, View } from "lucide-react";
+import DoctorList from "./DoctorList.jsx";
+import DiagnosticCenterList from "./DiagnosticCenterList.jsx";
+import AddDoctorForm from "./AddDoctorForm.jsx";
+import AddDiagnosticCenterForm from "./AddDiagnosticCenterForm.jsx";
+import DiagnosticCenterDetails from "./DiagnosticCenterDetails.jsx";
+import PrescriptionList from "../view-prescription/page.jsx";
 
 const AdminDashboard = () => {
-  const [showAddDoctor, setShowAddDoctor] = useState(false)
-  const [showAddDiagnosticCenter, setShowAddDiagnosticCenter] = useState(false)
-  const [selectedCenterId, setSelectedCenterId] = useState(null)
+  const [showAddDoctor, setShowAddDoctor] = useState(false);
+  const [showAddDiagnosticCenter, setShowAddDiagnosticCenter] = useState(false);
+  const [selectedCenterId, setSelectedCenterId] = useState(null);
+
+  const [doctors, setDoctors] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/get-doctors", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setDoctors(data))
+      .catch((error) => console.error("Error:", error));
+  }, []);
 
   return (
     <div className="container mx-auto p-4">
@@ -23,19 +36,19 @@ const AdminDashboard = () => {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="doctors">Doctors</TabsTrigger>
           <TabsTrigger value="diagnostics">Diagnostic Centers</TabsTrigger>
-          <TabsTrigger value="banners">Banners</TabsTrigger>
+          <TabsTrigger value="records">Medical Records</TabsTrigger>
         </TabsList>
         <TabsContent value="doctors">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Manage Doctors</h2>
-            <Button onClick={() => setShowAddDoctor(true)}>
+            {/* <Button onClick={() => setShowAddDoctor(true)}>
               <PlusCircle className="mr-2 h-4 w-4" /> Add Doctor
-            </Button>
+            </Button> */}
           </div>
           {showAddDoctor ? (
             <AddDoctorForm onClose={() => setShowAddDoctor(false)} />
           ) : (
-            <DoctorList />
+            <DoctorList doctors={doctors} />
           )}
         </TabsContent>
         <TabsContent value="diagnostics">
@@ -46,24 +59,26 @@ const AdminDashboard = () => {
             </Button>
           </div>
           {showAddDiagnosticCenter ? (
-            <AddDiagnosticCenterForm onClose={() => setShowAddDiagnosticCenter(false)} />
+            <AddDiagnosticCenterForm
+              onClose={() => setShowAddDiagnosticCenter(false)}
+            />
           ) : selectedCenterId ? (
-            <DiagnosticCenterDetails 
+            <DiagnosticCenterDetails
               centerId={selectedCenterId}
               onBack={() => setSelectedCenterId(null)}
             />
           ) : (
-            <DiagnosticCenterList 
+            <DiagnosticCenterList
               onSelectCenter={(centerId) => setSelectedCenterId(centerId)}
             />
           )}
         </TabsContent>
-        <TabsContent value="banners">
-          <BannerManagement />
+        <TabsContent value="records">
+          <PrescriptionList />
         </TabsContent>
       </Tabs>
     </div>
-  )
-}
+  );
+};
 
-export default AdminDashboard
+export default AdminDashboard;

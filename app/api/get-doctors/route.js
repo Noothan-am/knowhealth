@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { dbConnect } from "@/config/dbconnect";
+import dbConnect from "@/config/dbconnect";
 import Doctor from "@/models/doctors";
 
 export async function POST(req) {
@@ -24,6 +24,20 @@ export async function POST(req) {
       return NextResponse.json({ error: "No doctors found" }, { status: 404 });
     }
 
+    return NextResponse.json(doctors, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    await dbConnect();
+    const doctors = await Doctor.find();
     return NextResponse.json(doctors, { status: 200 });
   } catch (error) {
     console.error(error);

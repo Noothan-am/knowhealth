@@ -3,6 +3,7 @@ import User from "@/models/users";
 import Doctor from "@/models/doctors";
 import dbConnect from "@/config/dbconnect";
 import bcrypt from "bcrypt";
+import { handleFile } from "../prescription";
 
 export async function POST(request) {
   await dbConnect();
@@ -54,6 +55,19 @@ export async function POST(request) {
       );
     }
 
+    const d = new FormData();
+    d.append("file", formData.get("file"));
+    console.log(formData.get("file"));
+    const { finalUrl, success } = await handleFile(d);
+    console.log("i am here", finalUrl, success);
+
+    if (!success) {
+      return NextResponse.json(
+        { error: "Failed to upload file" },
+        { status: 500 }
+      );
+    }
+
     try {
       const newDoctor = new Doctor({
         name,
@@ -63,6 +77,7 @@ export async function POST(request) {
         phone,
         experience: parseInt(experience),
         consultationFee: parseInt(consultationFee),
+        image: finalUrl,
       });
 
       await newDoctor.save();

@@ -36,8 +36,11 @@ export default function LoginPage() {
         setLoginError(data.error);
       } else {
         toast.success("login successful");
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ ...data.user, role: activeTab })
+        );
         window.location.href = "/";
-        console.log(`${activeTab} login successful`);
       }
     } catch (error) {
       setLoginError("Login failed. Please try again.");

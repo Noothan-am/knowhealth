@@ -8,10 +8,10 @@ export async function handleFile(formData) {
   try {
     const file = formData.get("file");
 
-    if (!file.name.endsWith(".pdf") && file.type !== "application/pdf") {
-      console.error("Invalid file type. Only PDF files are allowed.");
-      return;
-    }
+    // if (!file.name.endsWith(".pdf") && file.type !== "application/pdf") {
+    //   console.error("Invalid file type. Only PDF files are allowed.");
+    //   return;
+    // }
 
     const client = new S3Client({
       region: process.env.AWS_REGION,
