@@ -54,14 +54,19 @@ const AdminDashboard = () => {
         <TabsContent value="diagnostics">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Manage Diagnostic Centers</h2>
-            <Button onClick={() => setShowAddDiagnosticCenter(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Diagnostic Center
-            </Button>
+            <div className="space-x-2">
+            <Button onClick={() => setShowAddTestSpeciality(true)}>
+                <PlusCircle className="mr-2 h-4 w-4" /> Add Test name/Speciality
+              </Button>
+              <Button onClick={() => setShowAddDiagnosticCenter(true)}>
+                <PlusCircle className="mr-2 h-4 w-4" /> Add Diagnostic Center
+              </Button>
+            </div>
           </div>
           {showAddDiagnosticCenter ? (
-            <AddDiagnosticCenterForm
-              onClose={() => setShowAddDiagnosticCenter(false)}
-            />
+            <AddDiagnosticCenterForm onClose={() => setShowAddDiagnosticCenter(false)} />
+          ) : showAddTestSpeciality ? (
+            <AddTestSpecialityList onClose={() => setShowAddTestSpeciality(false)} />
           ) : selectedCenterId ? (
             <DiagnosticCenterDetails
               centerId={selectedCenterId}

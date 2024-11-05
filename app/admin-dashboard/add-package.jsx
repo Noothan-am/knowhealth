@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -16,13 +16,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Plus, X } from 'lucide-react'
@@ -37,21 +30,39 @@ const packageSchema = z.object({
   tests: z.array(z.string()).min(1, "Enter at least one test"),
 })
 
-const specialities = [
-  "Hematology",
-  "Biochemistry",
-  "Microbiology",
-  "Cardiology",
-  "Radiology",
-  "Endocrinology",
-  "Ophthalmology",
-  "Pulmonology",
-  "Immunology",
-  "Genetics"
-]
-
 const AddPackageForm = ({ onClose, diagnosticCenterId }) => {
   const { toast } = useToast()
+  const [specialities, setSpecialities] = useState([])
+
+  useEffect(() => {
+    const fetchSpecialities = async () => {
+      try {
+        const response = await fetch('/api/testspeciality')
+        if (response.ok) {
+          const data = await response.json()
+          const specialityNames = data.map(item => item.specialities.name)
+          setSpecialities(specialityNames)
+        } else {
+          console.error('Failed to fetch specialities')
+          toast({
+            title: "Error",
+            description: "Failed to fetch specialities",
+            variant: "destructive",
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching specialities:', error)
+        toast({
+          title: "Error", 
+          description: error.message || "Failed to fetch specialities",
+          variant: "destructive",
+        })
+      }
+    }
+
+    fetchSpecialities()
+  }, [])
+
   const form = useForm({
     resolver: zodResolver(packageSchema),
     defaultValues: {
