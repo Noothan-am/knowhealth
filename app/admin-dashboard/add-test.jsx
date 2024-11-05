@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -33,21 +33,11 @@ const testSchema = z.object({
   image: z.instanceof(FileList).optional(),
 })
 
-const specialities = [
-  "Hematology",
-  "Biochemistry",
-  "Microbiology",
-  "Cardiology",
-  "Radiology",
-  "Endocrinology",
-  "Ophthalmology",
-  "Pulmonology",
-  "Immunology",
-  "Genetics"
-]
-
 const AddTestForm = ({ onClose, diagnosticCenterId }) => {
   const { toast } = useToast()
+  const [specialities, setSpecialities] = useState([])
+  const [tests, setTests] = useState([])
+
   const form = useForm({
     resolver: zodResolver(testSchema),
     defaultValues: {
@@ -57,6 +47,41 @@ const AddTestForm = ({ onClose, diagnosticCenterId }) => {
       speciality: "",
     },
   })
+
+  useEffect(() => {
+    const fetchSpecialitiesAndTests = async () => {
+      try {
+        const response = await fetch('/api/testspeciality')
+        if (response.ok) {
+          const data = await response.json()
+          setSpecialities(data.map(item => item.specialities.name))
+          const allTests = data.flatMap(speciality => 
+            speciality.specialities.tests.map(test => ({
+              name: test.name,
+              speciality: speciality.specialities.name
+            }))
+          )
+          setTests(allTests)
+        } else {
+          console.error('Failed to fetch specialities and tests')
+          toast({
+            title: "Error",
+            description: "Failed to fetch specialities and tests",
+            variant: "destructive",
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching specialities and tests:', error)
+        toast({
+          title: "Error",
+          description: error.message || "Failed to fetch specialities and tests",
+          variant: "destructive", 
+        })
+      }
+    }
+
+    fetchSpecialitiesAndTests()
+  }, [])
 
   const onSubmit = async (values) => {
     try {
@@ -112,11 +137,31 @@ const AddTestForm = ({ onClose, diagnosticCenterId }) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Test Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter test name" {...field} />
-              </FormControl>
+              <Select 
+                onValueChange={(value) => {
+                  field.onChange(value)
+                  const selectedTest = tests.find(test => test.name === value)
+                  if (selectedTest) {
+                    form.setValue('speciality', selectedTest.speciality)
+                  }
+                }} 
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a test" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {tests.map((test) => (
+                    <SelectItem key={test.name} value={test.name}>
+                      {test.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormDescription>
-                The name of the test to be added.
+                Select the test to be added.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -166,20 +211,9 @@ const AddTestForm = ({ onClose, diagnosticCenterId }) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Speciality</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a speciality" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {specialities.map((speciality) => (
-                    <SelectItem key={speciality} value={speciality}>
-                      {speciality}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <Input {...field} disabled />
+              </FormControl>
               <FormDescription>
                 The medical speciality associated with this test.
               </FormDescription>

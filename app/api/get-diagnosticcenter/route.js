@@ -33,9 +33,7 @@ export async function POST(req) {
     if (result.data.tests?.length) {
       query['tests.name'] = { $in: result.data.tests };
     }
-    if (result.data.specialities?.length) {
-      query['tests.speciality'] = { $in: result.data.specialities };
-    }
+    
     if (result.data.pincode) {
       query.pincode = result.data.pincode;
     }

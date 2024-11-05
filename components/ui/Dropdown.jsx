@@ -57,7 +57,7 @@ export default function Dropdown({ setWho, setId }) {
               onSelect={() => {
                 setSelectedOption(option);
                 setWho("user");
-                setId("kjkllkj-kjkjkjjk-kljjkljk");
+                setId(option.id);
               }}
               className="justify-between"
             >

@@ -32,7 +32,9 @@ export async function POST(request) {
 export async function GET(request) {
   await dbConnect();
   try {
-    const prescriptions = await Prescription.find().sort({ current: -1 });
+    const prescriptions = await Prescription.find().sort({
+      current: -1,
+    });
     if (!prescriptions) {
       return NextResponse.json(
         { error: "No prescriptions found" },
