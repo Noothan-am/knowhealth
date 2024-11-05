@@ -21,11 +21,13 @@ import {
   Video,
   Microscope,
 } from "lucide-react";
+import { useRouter } from 'next/navigation';
 
 export default function PatientDashboard() {
   const [diagnosticAppointments, setDiagnosticAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchDiagnosticAppointments = async () => {
@@ -99,6 +101,10 @@ export default function PatientDashboard() {
 
   const handleViewMedicalRecords = () => {
     window.location.href = "/user-record";
+  };
+
+  const handleViewOrder = (orderId) => {
+    router.push(`/view-order?orderId=${orderId}`);
   };
 
   return (
@@ -199,7 +205,11 @@ export default function PatientDashboard() {
                             <Microscope className="mr-1 h-3 w-3" />
                             Diagnostic
                           </Badge>
-                          <Button variant="ghost" size="icon">
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => handleViewOrder(appointment.id)}
+                          >
                             <ChevronRight className="h-4 w-4" />
                             <span className="sr-only">
                               View diagnostic appointment details
