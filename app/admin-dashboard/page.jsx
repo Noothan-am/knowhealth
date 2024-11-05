@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle, View } from "lucide-react";
 import DoctorList from "./DoctorList.jsx";
 import DiagnosticCenterList from "./DiagnosticCenterList.jsx";
+import AddTestSpecialityList from "./AddTestSpecialityList.jsx";
 import AddDoctorForm from "./AddDoctorForm.jsx";
 import AddDiagnosticCenterForm from "./AddDiagnosticCenterForm.jsx";
 import DiagnosticCenterDetails from "./DiagnosticCenterDetails.jsx";
@@ -14,6 +15,7 @@ const AdminDashboard = () => {
   const [showAddDoctor, setShowAddDoctor] = useState(false);
   const [showAddDiagnosticCenter, setShowAddDiagnosticCenter] = useState(false);
   const [selectedCenterId, setSelectedCenterId] = useState(null);
+  const [showAddTestSpeciality, setShowAddTestSpeciality] = useState(false);
 
   const [doctors, setDoctors] = useState([]);
 
