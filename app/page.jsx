@@ -106,7 +106,7 @@ export default function Home() {
                 title: "Upload a Prescription",
                 icon: FileText,
                 color: "#FFC107",
-                link: "/upload-a-prescription",
+                link: "/prescription",
               },
               {
                 title: "Surgery Support",
