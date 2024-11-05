@@ -12,6 +12,18 @@ const OrderSchema = new mongoose.Schema({
     required: true,
     ref: 'User'
   },
+  patientName: {
+    type: String,
+    required: true
+  },
+  patientAge: {
+    type: Number,
+    required: true
+  },
+  patientPhoneNumber: {
+    type: String,
+    required: true
+  },
   diagnosticCenterId: {
     type: String,
     required: true,
