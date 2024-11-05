@@ -91,7 +91,7 @@ export default function PatientDashboard() {
   ];
 
   const handleViewMedicalRecords = () => {
-    window.location.href = "/view-prescription";
+    window.location.href = "/user-record";
   };
 
   return (

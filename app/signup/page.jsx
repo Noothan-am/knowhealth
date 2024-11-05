@@ -115,17 +115,6 @@ export default function SignupPage() {
                       required
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="consumer-image">Image</Label>
-                    <Input
-                      id="consumer-image"
-                      name="image"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      required
-                    />
-                  </div>
                   <Button type="submit" className="w-full">
                     Sign Up as Customer
                   </Button>
