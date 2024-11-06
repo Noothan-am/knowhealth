@@ -108,6 +108,7 @@ export default function DoctorDashboard() {
   const handleTabSelect = (name) => {
     if (name == "Add Prescriptions") {
       console.log("Tab selected: ", name);
+      ``;
       window.location.href = "/prescription";
     }
     setActiveTab(name.toLowerCase());
