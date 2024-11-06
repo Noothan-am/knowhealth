@@ -27,6 +27,11 @@ export default function PatientDashboard() {
   const [diagnosticAppointments, setDiagnosticAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [reports, setReports] = useState([]);
+  const [orderLoading, setOrderLoading] = useState(true);
+  const [reportLoading, setReportLoading] = useState(true);
+  const [orderError, setOrderError] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,32 +41,58 @@ export default function PatientDashboard() {
     }
     const details = JSON.parse(localStorage.getItem("Data"));
     console.log(details.id);
-    const fetchDiagnosticAppointments = async () => {
+
+    const fetchOrders = async () => {
       try {
-        const response = await fetch("/api/orders/get-orders", {
-          method: "POST",
+        const response = await fetch('/api/orders/get-orders', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            userId: details.id,
-          }),
+          body: JSON.stringify({ userid: details.id }),
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch diagnostic appointments");
+          throw new Error('Failed to fetch orders');
         }
 
         const data = await response.json();
+        setOrders(data);
         setDiagnosticAppointments(data);
       } catch (err) {
+        setOrderError(err.message);
         setError(err.message);
       } finally {
+        setOrderLoading(false);
         setLoading(false);
       }
     };
 
-    fetchDiagnosticAppointments();
+    const fetchReports = async () => {
+      try {
+        const response = await fetch('/api/reports/get-reports', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userid: details.id }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch reports');
+        }
+
+        const data = await response.json();
+        setReports(data);
+      } catch (err) {
+        console.error('Error fetching reports:', err);
+      } finally {
+        setReportLoading(false);
+      }
+    };
+
+    fetchOrders();
+    fetchReports();
   }, []);
 
   const appointments = [
@@ -249,28 +280,39 @@ export default function PatientDashboard() {
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[200px]">
-                  {testResults.map((test, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between py-2 border-b last:border-b-0"
-                    >
-                      <div>
-                        <p className="font-medium">{test.name}</p>
-                        <p className="text-sm text-gray-500">{test.date}</p>
-                      </div>
-                      <Badge
-                        variant={
-                          test.status === "Normal"
-                            ? "success"
-                            : test.status === "Abnormal"
-                            ? "destructive"
-                            : "secondary"
-                        }
-                      >
-                        {test.status}
-                      </Badge>
-                    </div>
-                  ))}
+                  {orderLoading || reportLoading ? (
+                    <p>Loading test results...</p>
+                  ) : orderError ? (
+                    <p>Error: {orderError}</p>
+                  ) : (
+                    orders.map((order) => {
+                      const report = reports.find(r => r.orderId === order.id);
+                      return (
+                        <div
+                          key={order.id}
+                          className="flex items-center justify-between py-2 border-b last:border-b-0"
+                        >
+                          <div>
+                            <p className="font-medium">{order.item.name}</p>
+                            <p className="text-sm text-gray-500">
+                              {new Date(order.appointmentDate).toLocaleDateString()}
+                            </p>
+                          </div>
+                          {report ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => router.push(`/view-report?reportId=${report.id}`)}
+                            >
+                              View Report
+                            </Button>
+                          ) : (
+                            <Badge variant="secondary">Pending</Badge>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
                 </ScrollArea>
               </CardContent>
               <CardFooter>

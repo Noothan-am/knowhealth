@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import ViewOrder from "../admin-dashboard/ViewOrder";
+import { useRouter } from 'next/navigation';
 
 // WhiteCard component
 function WhiteCard({ children, className = "" }) {
@@ -42,6 +43,10 @@ export default function DashboardWithCard() {
   const [orderLoading, setOrderLoading] = useState(true);
   const [orderError, setOrderError] = useState(null);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [reports, setReports] = useState([]);
+  const [reportLoading, setReportLoading] = useState(true);
+  const [reportError, setReportError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCenterDetails = async () => {
@@ -51,7 +56,7 @@ export default function DashboardWithCard() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ centerId: '06e3c415-25d9-4d76-b28c-7e75d62698b0' }),
+          body: JSON.stringify({ centerId: '58bf0384-33a5-4059-9cfd-68a274a25716' }),
         })
         if (response.ok) {
           const data = await response.json()
@@ -77,7 +82,7 @@ export default function DashboardWithCard() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ diagnosticCenterId: '06e3c415-25d9-4d76-b28c-7e75d62698b0' }),
+          body: JSON.stringify({ diagnosticCenterId: '58bf0384-33a5-4059-9cfd-68a274a25716' }),
         });
 
         if (!response.ok) {
@@ -96,6 +101,34 @@ export default function DashboardWithCard() {
     fetchOrders();
   }, []);
 
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const response = await fetch('/api/reports/get-reports', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ diagnosticCenterId: '58bf0384-33a5-4059-9cfd-68a274a25716' }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch reports');
+        }
+
+        const data = await response.json();
+        setReports(data);
+      } catch (err) {
+        console.error('Error fetching reports:', err);
+        // We're not setting an error state here, as we want to show the create report option for orders without reports
+      } finally {
+        setReportLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, []);
+
   if (loading) {
     return <div>Loading...</div>
   }
@@ -106,6 +139,10 @@ export default function DashboardWithCard() {
 
   const handleViewOrder = (orderId) => {
     setSelectedOrderId(orderId);
+  };
+
+  const handleCreateReport = (orderId) => {
+    router.push(`/dc-dashboard/report?orderId=${orderId}`);
   };
 
   const getStatusBadgeVariant = (status) => {
@@ -370,7 +407,67 @@ export default function DashboardWithCard() {
             )}
           </TabsContent>
           <TabsContent value="reports" className="space-y-4">
-            {/* Reports content */}
+            {orderLoading || reportLoading ? (
+              <div>Loading...</div>
+            ) : orderError ? (
+              <div>Error: {orderError}</div>
+            ) : (
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Order ID</TableHead>
+                      <TableHead>Patient Name</TableHead>
+                      <TableHead>Test Name</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Report Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {orders.map((order) => {
+                      const report = reports.find(r => r.orderId === order.id);
+                      return (
+                        <TableRow key={order.id}>
+                          <TableCell className="font-medium">{order.id}</TableCell>
+                          <TableCell>{order.patientName}</TableCell>
+                          <TableCell>{order.item.name}</TableCell>
+                          <TableCell>
+                            {new Date(order.appointmentDate).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            {report ? (
+                              <Badge variant="success">Created</Badge>
+                            ) : (
+                              <Badge variant="warning">Pending</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {report ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => router.push(`/dc-dashboard/view-report/?reportId=${report.id}`)}
+                              >
+                                View Report
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleCreateReport(order.id)}
+                              >
+                                Create Report
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>
