@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,8 +21,41 @@ import {
   Video,
   Microscope,
 } from "lucide-react";
+import { useRouter } from 'next/navigation';
 
 export default function PatientDashboard() {
+  const [diagnosticAppointments, setDiagnosticAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchDiagnosticAppointments = async () => {
+      try {
+        const response = await fetch('/api/orders/get-orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: "9d3e6c23-8bed-44ea-af69-aa6f831e7dd3" }), // Replace with actual user ID
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch diagnostic appointments');
+        }
+
+        const data = await response.json();
+        setDiagnosticAppointments(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDiagnosticAppointments();
+  }, []);
+
   const appointments = [
     {
       id: 1,
@@ -66,32 +99,12 @@ export default function PatientDashboard() {
     { name: "Thyroid Function", date: "2023-05-20", status: "Pending" },
   ];
 
-  const diagnosticAppointments = [
-    {
-      id: 1,
-      test: "MRI Scan",
-      location: "City Imaging Center",
-      date: "2023-06-25",
-      time: "9:00 AM",
-    },
-    {
-      id: 2,
-      test: "Echocardiogram",
-      location: "Heart Diagnostics Lab",
-      date: "2023-06-28",
-      time: "11:30 AM",
-    },
-    {
-      id: 3,
-      test: "Bone Density Scan",
-      location: "Orthopedic Center",
-      date: "2023-07-02",
-      time: "2:00 PM",
-    },
-  ];
-
   const handleViewMedicalRecords = () => {
     window.location.href = "/user-record";
+  };
+
+  const handleViewOrder = (orderId) => {
+    router.push(`/view-order?orderId=${orderId}`);
   };
 
   return (
@@ -168,34 +181,44 @@ export default function PatientDashboard() {
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[250px]">
-                  {diagnosticAppointments.map((appointment) => (
-                    <div
-                      key={appointment.id}
-                      className="flex items-center justify-between py-4 border-b last:border-b-0"
-                    >
-                      <div>
-                        <p className="font-medium">{appointment.test}</p>
-                        <p className="text-sm text-gray-500">
-                          {appointment.location}
-                        </p>
-                        <p className="text-sm">
-                          {appointment.date} at {appointment.time}
-                        </p>
+                  {loading ? (
+                    <p>Loading diagnostic appointments...</p>
+                  ) : error ? (
+                    <p>Error: {error}</p>
+                  ) : (
+                    diagnosticAppointments.map((appointment) => (
+                      <div
+                        key={appointment.id}
+                        className="flex items-center justify-between py-4 border-b last:border-b-0"
+                      >
+                        <div>
+                          <p className="font-medium">{appointment.item.name}</p>
+                          <p className="text-sm text-gray-500">
+                            {appointment.diagnosticCenterId}
+                          </p>
+                          <p className="text-sm">
+                            {new Date(appointment.appointmentDate).toLocaleDateString()} at {new Date(appointment.appointmentDate).toLocaleTimeString()}
+                          </p>
+                        </div>
+                        <div className="flex items-center">
+                          <Badge variant="outline">
+                            <Microscope className="mr-1 h-3 w-3" />
+                            Diagnostic
+                          </Badge>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => handleViewOrder(appointment.id)}
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                            <span className="sr-only">
+                              View diagnostic appointment details
+                            </span>
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <Badge variant="outline">
-                          <Microscope className="mr-1 h-3 w-3" />
-                          Diagnostic
-                        </Badge>
-                        <Button variant="ghost" size="icon">
-                          <ChevronRight className="h-4 w-4" />
-                          <span className="sr-only">
-                            View diagnostic appointment details
-                          </span>
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </ScrollArea>
               </CardContent>
               <CardFooter>

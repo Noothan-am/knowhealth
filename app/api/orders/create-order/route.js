@@ -10,19 +10,22 @@ export async function POST(req) {
 
     // Create order object matching schema
     const orderData = {
-      userId: "temp-user-id", // TODO: Get from auth session
+      userId: data.userId,
       diagnosticCenterId: data.diagnosticCenterId,
       item: {
-        type: 'test', // Assuming test for now
-        id: data.testId,
-        name: data.testName,
-        price: data.totalAmount
+        type: 'test',
+        id: data.test.id,
+        name: data.test.name,
+        price: data.test.price
       },
       totalAmount: data.totalAmount,
       paymentMethod: data.paymentMethod,
       appointmentDate: data.appointmentDate,
       isHomeSampleCollection: data.isHomeSampleCollection,
-      address: data.isHomeSampleCollection ? data.address : null
+      address: data.isHomeSampleCollection ? data.address : null,
+      patientName: data.patientName,
+      patientAge: data.patientAge,
+      patientPhoneNumber: data.patientPhoneNumber
     }
 
     const order = await Order.create(orderData)

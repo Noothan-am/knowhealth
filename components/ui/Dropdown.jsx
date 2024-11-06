@@ -46,7 +46,7 @@ export default function Dropdown({ setWho, setId }) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="w-full justify-between">
-            {selectedOption.name ? selectedOption.name : "Select a doctor"}
+            {selectedOption.name ? selectedOption.name : "Select a Patient"}
             <ChevronDown className="ml-2 h-4  opacity-50" />
           </Button>
         </DropdownMenuTrigger>

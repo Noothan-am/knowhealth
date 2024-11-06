@@ -10,13 +10,15 @@ import AddDoctorForm from "./AddDoctorForm.jsx";
 import AddDiagnosticCenterForm from "./AddDiagnosticCenterForm.jsx";
 import DiagnosticCenterDetails from "./DiagnosticCenterDetails.jsx";
 import PrescriptionList from "../view-prescription/page.jsx";
+import ViewOrder from "./ViewOrder.jsx";
+import OrderList from "./OrderList.jsx";
 
 const AdminDashboard = () => {
   const [showAddDoctor, setShowAddDoctor] = useState(false);
   const [showAddDiagnosticCenter, setShowAddDiagnosticCenter] = useState(false);
   const [selectedCenterId, setSelectedCenterId] = useState(null);
   const [showAddTestSpeciality, setShowAddTestSpeciality] = useState(false);
-
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
@@ -35,10 +37,11 @@ const AdminDashboard = () => {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
       <Tabs defaultValue="doctors" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="doctors">Doctors</TabsTrigger>
           <TabsTrigger value="diagnostics">Diagnostic Centers</TabsTrigger>
           <TabsTrigger value="records">Medical Records</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
         </TabsList>
         <TabsContent value="doctors">
           <div className="flex justify-between items-center mb-4">
@@ -57,7 +60,7 @@ const AdminDashboard = () => {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Manage Diagnostic Centers</h2>
             <div className="space-x-2">
-            <Button onClick={() => setShowAddTestSpeciality(true)}>
+              <Button onClick={() => setShowAddTestSpeciality(true)}>
                 <PlusCircle className="mr-2 h-4 w-4" /> Add Test name/Speciality
               </Button>
               <Button onClick={() => setShowAddDiagnosticCenter(true)}>
@@ -66,9 +69,13 @@ const AdminDashboard = () => {
             </div>
           </div>
           {showAddDiagnosticCenter ? (
-            <AddDiagnosticCenterForm onClose={() => setShowAddDiagnosticCenter(false)} />
+            <AddDiagnosticCenterForm
+              onClose={() => setShowAddDiagnosticCenter(false)}
+            />
           ) : showAddTestSpeciality ? (
-            <AddTestSpecialityList onClose={() => setShowAddTestSpeciality(false)} />
+            <AddTestSpecialityList
+              onClose={() => setShowAddTestSpeciality(false)}
+            />
           ) : selectedCenterId ? (
             <DiagnosticCenterDetails
               centerId={selectedCenterId}
@@ -82,6 +89,16 @@ const AdminDashboard = () => {
         </TabsContent>
         <TabsContent value="records">
           <PrescriptionList />
+        </TabsContent>
+        <TabsContent value="orders">
+          {selectedOrderId ? (
+            <ViewOrder
+              orderId={selectedOrderId}
+              onBack={() => setSelectedOrderId(null)}
+            />
+          ) : (
+            <OrderList onSelectOrder={setSelectedOrderId} />
+          )}
         </TabsContent>
       </Tabs>
     </div>
