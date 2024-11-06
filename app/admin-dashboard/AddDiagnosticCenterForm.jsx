@@ -3,11 +3,19 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
+
 import { z } from "zod"
 import { StarRating } from "@/components/ui/star-rating"// Assuming you have a StarRating component
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 
 const createDiagnosticCenterSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -29,11 +37,48 @@ const createDiagnosticCenterSchema = z.object({
         onlineReports: z.boolean(),
     }).default({ homeSampleCollection: false, onlineReports: false }),
     specialities: z.string().optional(),
-    timings: z.object({}).optional(),
+    timings: z.object({
+        type: z.enum(['24/7', 'custom']).optional(),
+        startDay: z.string().optional(),
+        endDay: z.string().optional(),
+        startTime: z.string().optional(),
+        endTime: z.string().optional(),
+    }).optional(),
 });
 
 const AddDiagnosticCenterForm = ({ onClose }) => {
   const [image, setImage] = useState(null);
+
+  const [specialities, setSpecialities] = useState([])
+
+  useEffect(() => {
+    const fetchSpecialities = async () => {
+      try {
+        const response = await fetch('/api/testspeciality')
+        if (response.ok) {
+          const data = await response.json()
+          const specialityNames = data.map(item => item.specialities.name)
+          setSpecialities(specialityNames)
+        } else {
+          console.error('Failed to fetch specialities')
+          toast({
+            title: "Error",
+            description: "Failed to fetch specialities",
+            variant: "destructive",
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching specialities:', error)
+        toast({
+          title: "Error", 
+          description: error.message || "Failed to fetch specialities",
+          variant: "destructive",
+        })
+      }
+    }
+
+    fetchSpecialities()
+  }, [])
 
   const { register, handleSubmit, formState: { errors }, setValue, watch, trigger } = useForm({
     resolver: zodResolver(createDiagnosticCenterSchema),
@@ -51,7 +96,13 @@ const AddDiagnosticCenterForm = ({ onClose }) => {
       accreditations: '',
       services: { homeSampleCollection: false, onlineReports: false },
       specialities: '',
-      timings: {},
+      timings: {
+        type: undefined,
+        startDay: 'mon',
+        endDay: 'sat',
+        startTime: '',
+        endTime: ''
+      },
     },
     mode: 'onChange'
   });
@@ -165,8 +216,32 @@ const AddDiagnosticCenterForm = ({ onClose }) => {
         <Input id="accreditations" {...register("accreditations")} />
       </div>
       <div>
-        <Label htmlFor="specialities">Specialities (comma-separated)</Label>
-        <Input id="specialities" {...register("specialities")} />
+        <Label>Specialities</Label>
+        <div className="space-y-2">
+          {specialities.map((speciality) => (
+            <div key={speciality} className="flex items-center space-x-2">
+              <Checkbox
+                id={speciality}
+                checked={watch("specialities")?.includes(speciality)}
+                onCheckedChange={(checked) => {
+                  const currentSpecialities = watch("specialities") ? watch("specialities").split(',') : [];
+                  let newSpecialities;
+                  if (checked) {
+                    newSpecialities = [...currentSpecialities, speciality];
+                  } else {
+                    newSpecialities = currentSpecialities.filter(s => s !== speciality);
+                  }
+                  setValue("specialities", newSpecialities.join(','));
+                  trigger("specialities");
+                }}
+              />
+              <Label htmlFor={speciality}>{speciality}</Label>
+            </div>
+          ))}
+        </div>
+        {errors.specialities && (
+          <p className="text-red-500">{errors.specialities.message}</p>
+        )}
       </div>
       <div>
         <Label htmlFor="image">Image (optional)</Label>
@@ -194,21 +269,110 @@ const AddDiagnosticCenterForm = ({ onClose }) => {
         />
         <Label htmlFor="onlineReports">Online Reports</Label>
       </div>
-      <div>
-        <Label htmlFor="timings">Timings (JSON format)</Label>
-        <Textarea 
-          id="timings" 
-          {...register("timings")}
-          onChange={(e) => {
-            try {
-              const parsedTimings = JSON.parse(e.target.value);
-              setValue("timings", parsedTimings);
-              trigger("timings");
-            } catch (error) {
-              console.error('Invalid JSON for timings');
-            }
-          }} 
-        />
+      <div className="space-y-4">
+        <Label>Center Timings</Label>
+        <div className="flex items-center gap-4">
+          <Label className="w-20">Type</Label>
+          <Select
+            onValueChange={(value) => {
+              if (value === '24/7') {
+                setValue('timings', { type: '24/7' });
+              } else {
+                setValue('timings', { 
+                  type: 'custom', 
+                  startDay: 'mon',
+                  endDay: 'sat',
+                  startTime: '',
+                  endTime: ''
+                });
+              }
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select timing type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="24/7">24/7</SelectItem>
+              <SelectItem value="custom">Custom</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {watch('timings')?.type === 'custom' && (
+          <>
+            <div className="flex items-center gap-4">
+              <Label className="w-20">Days</Label>
+              <div className="flex items-center gap-2">
+                <Select
+                  value={watch('timings')?.startDay}
+                  onValueChange={(value) => {
+                    setValue('timings', {
+                      ...watch('timings'),
+                      startDay: value
+                    });
+                  }}
+                >
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue placeholder="Start day" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="mon">Mon</SelectItem>
+                    <SelectItem value="tue">Tue</SelectItem>
+                    <SelectItem value="wed">Wed</SelectItem>
+                    <SelectItem value="thu">Thu</SelectItem>
+                    <SelectItem value="fri">Fri</SelectItem>
+                    <SelectItem value="sat">Sat</SelectItem>
+                  </SelectContent>
+                </Select>
+                <span>to</span>
+                <Select
+                  value={watch('timings')?.endDay}
+                  onValueChange={(value) => {
+                    setValue('timings', {
+                      ...watch('timings'),
+                      endDay: value
+                    });
+                  }}
+                >
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue placeholder="End day" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="mon">Mon</SelectItem>
+                    <SelectItem value="tue">Tue</SelectItem>
+                    <SelectItem value="wed">Wed</SelectItem>
+                    <SelectItem value="thu">Thu</SelectItem>
+                    <SelectItem value="fri">Fri</SelectItem>
+                    <SelectItem value="sat">Sat</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <Label className="w-20">Hours</Label>
+              <Input
+                type="time"
+                value={watch('timings')?.startTime || ''}
+                onChange={(e) => {
+                  setValue('timings', {
+                    ...watch('timings'),
+                    startTime: e.target.value
+                  });
+                }}
+              />
+              <span>to</span>
+              <Input
+                type="time"
+                value={watch('timings')?.endTime || ''}
+                onChange={(e) => {
+                  setValue('timings', {
+                    ...watch('timings'),
+                    endTime: e.target.value
+                  });
+                }}
+              />
+            </div>
+          </>
+        )}
       </div>
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>

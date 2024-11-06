@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { ChevronLeft, ChevronRight, Droplet, Beaker, Cookie, Heart, Brain, Syringe, Apple, Zap, Activity, Microscope, Stethoscope, Thermometer, Eye, Ear, Bone, Shield, Microchip, Scales, Search } from "lucide-react"
 import Image from 'next/image'
 import { StarRating } from "@/components/ui/star-rating"
+import { useRouter } from 'next/navigation'
 
 export default function MedicalDiagnosticsPage() {
   const [currentBanner, setCurrentBanner] = useState(0)
@@ -16,6 +17,7 @@ export default function MedicalDiagnosticsPage() {
   const [testResults, setTestResults] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const scrollRef = useRef(null)
+  const router = useRouter()
 
   const banners = [
     "Comprehensive Health Screenings",
@@ -118,6 +120,10 @@ export default function MedicalDiagnosticsPage() {
     : selectedSpeciality
       ? selectedSpeciality.tests
       : []
+
+  const handleBookNow = (testId, diagnosticCenterId) => {
+    router.push(`/order-now?testId=${testId}&diagnosticCenterId=${diagnosticCenterId}`)
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -251,7 +257,12 @@ export default function MedicalDiagnosticsPage() {
                   <div className="mb-4">
                     <StarRating value={result.diagnosticCenter.rating || 0} readOnly={true} />
                   </div>
-                  <Button className="w-full">Book Now</Button>
+                  <Button 
+                    className="w-full" 
+                    onClick={() => handleBookNow(result.id, result.diagnosticCenter.id)}
+                  >
+                    Book Now
+                  </Button>
                 </Card>
               ))}
             </div>

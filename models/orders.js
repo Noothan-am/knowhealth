@@ -1,20 +1,44 @@
 import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 const OrderSchema = new mongoose.Schema({
-  orderId: {
+  id: {
     type: String,
+    default: uuidv4,
     required: true,
-    unique: true
   },
   userId: {
+    type: String,
+    required: true,
+    ref: 'User'
+  },
+  patientName: {
+    type: String,
+    required: true
+  },
+  patientAge: {
+    type: Number,
+    required: true
+  },
+  patientPhoneNumber: {
     type: String,
     required: true
   },
   diagnosticCenterId: {
     type: String,
-    required: true
+    required: true,
+    ref: 'DiagnosticCenter'
   },
-  tests: [{
+  item: {
+    type: {
+      type: String,
+      enum: ['test', 'package'],
+      required: true
+    },
+    id: {
+      type: String,
+      required: true
+    },
     name: {
       type: String,
       required: true
@@ -23,48 +47,30 @@ const OrderSchema = new mongoose.Schema({
       type: Number,
       required: true
     }
-  }],
-  packages: [{
-    name: {
-      type: String,
-      required: true
-    },
-    testCount: {
-      type: Number,
-      required: true
-    },
-    price: {
-      type: Number,
-      required: true
-    },
-    tests: [{
-      type: String,
-      required: true
-    }]
-  }],
+  },
   totalAmount: {
     type: Number,
     required: true
   },
   status: {
     type: String,
-    enum: ["pending", "confirmed", "completed", "cancelled"],
-    default: "pending"
+    enum: ['pending', 'confirmed', 'completed', 'cancelled'],
+    default: 'pending'
   },
   paymentStatus: {
     type: String,
-    enum: ["pending", "completed", "failed", "refunded"],
-    default: "pending"
+    enum: ['pending', 'paid', 'failed'],
+    default: 'pending'
+  },
+  paymentMethod: {
+    type: String,
+    required: true
   },
   appointmentDate: {
     type: Date,
     required: true
   },
-  homeSampleCollection: {
-    type: Boolean,
-    default: false
-  },
-  onlineReports: {
+  isHomeSampleCollection: {
     type: Boolean,
     default: false
   },
@@ -84,6 +90,4 @@ const OrderSchema = new mongoose.Schema({
   }
 });
 
-const Order = mongoose.models.Order || mongoose.model("Order", OrderSchema);
-
-export default Order;
+export default mongoose.models.Order || mongoose.model('Order', OrderSchema);

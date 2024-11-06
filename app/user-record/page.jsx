@@ -42,7 +42,7 @@ export default function PrescriptionList() {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     console.log("user", user.id);
-
+    
     const fetchPrescription = async () => {
       try {
         const response = await fetch(`/api/get-user-record`, {
