@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -8,6 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Beaker, FileText, Users, Search, Download, Plus } from "lucide-react";
+import Image from 'next/image';
+import AddTestForm from '../admin-dashboard/add-test';
+import AddPackageForm from '../admin-dashboard/add-package';
 import {
   Table,
   TableBody,
@@ -16,12 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar } from "@/components/ui/calendar";
-import { Beaker, FileText, Users, Search, Download } from "lucide-react";
+import ViewOrder from "../admin-dashboard/ViewOrder";
 
 // WhiteCard component
 function WhiteCard({ children, className = "" }) {
@@ -32,143 +33,121 @@ function WhiteCard({ children, className = "" }) {
   );
 }
 
-// Mock data (you should replace this with your actual data fetching logic)
-const centerInfo = {
-  name: "HealthFirst Diagnostics",
-  address: "123 Main St, Cityville, State 12345",
-  contact: "+1 (555) 123-4567",
-  email: "info@healthfirst.com",
-};
-
-const tests = [
-  {
-    id: 1,
-    name: "Complete Blood Count (CBC)",
-    price: 50,
-    turnaroundTime: "24 hours",
-  },
-  { id: 2, name: "Lipid Panel", price: 75, turnaroundTime: "48 hours" },
-  {
-    id: 3,
-    name: "Thyroid Function Test",
-    price: 100,
-    turnaroundTime: "72 hours",
-  },
-  { id: 4, name: "COVID-19 PCR Test", price: 150, turnaroundTime: "24 hours" },
-  { id: 5, name: "Vitamin D Test", price: 80, turnaroundTime: "48 hours" },
-];
-
-const appointments = [
-  {
-    id: 1,
-    patientName: "John Doe",
-    test: "Complete Blood Count (CBC)",
-    date: "2023-05-15",
-    time: "10:00 AM",
-    status: "Completed",
-  },
-  {
-    id: 2,
-    patientName: "Jane Smith",
-    test: "Lipid Panel",
-    date: "2023-05-16",
-    time: "11:30 AM",
-    status: "Scheduled",
-  },
-  {
-    id: 3,
-    patientName: "Alice Johnson",
-    test: "Thyroid Function Test",
-    date: "2023-05-17",
-    time: "09:15 AM",
-    status: "In Progress",
-  },
-  {
-    id: 4,
-    patientName: "Bob Williams",
-    test: "COVID-19 PCR Test",
-    date: "2023-05-18",
-    time: "02:00 PM",
-    status: "Scheduled",
-  },
-  {
-    id: 5,
-    patientName: "Eva Brown",
-    test: "Vitamin D Test",
-    date: "2023-05-19",
-    time: "10:45 AM",
-    status: "Scheduled",
-  },
-];
-
-const reports = [
-  {
-    id: 1,
-    patientName: "John Doe",
-    test: "Complete Blood Count (CBC)",
-    date: "2023-05-15",
-    status: "Ready",
-  },
-  {
-    id: 2,
-    patientName: "Mary Johnson",
-    test: "Lipid Panel",
-    date: "2023-05-14",
-    status: "Ready",
-  },
-  {
-    id: 3,
-    patientName: "Alice Johnson",
-    test: "Thyroid Function Test",
-    date: "2023-05-17",
-    status: "Processing",
-  },
-  {
-    id: 4,
-    patientName: "Robert Smith",
-    test: "COVID-19 PCR Test",
-    date: "2023-05-16",
-    status: "Ready",
-  },
-  {
-    id: 5,
-    patientName: "Eva Brown",
-    test: "Vitamin D Test",
-    date: "2023-05-19",
-    status: "Pending",
-  },
-];
-
 export default function DashboardWithCard() {
-  const [date, setDate] = useState(new Date());
-  const [searchTerm, setSearchTerm] = useState("");
+  const [center, setCenter] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [formType, setFormType] = useState('test');
+  const [orders, setOrders] = useState([]);
+  const [orderLoading, setOrderLoading] = useState(true);
+  const [orderError, setOrderError] = useState(null);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
-  const filteredAppointments = appointments.filter(
-    (appointment) =>
-      appointment.patientName
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      appointment.test.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchCenterDetails = async () => {
+      try {
+        const response = await fetch('/api/get-diagnosticcenter/id', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ centerId: '06e3c415-25d9-4d76-b28c-7e75d62698b0' }),
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setCenter(data)
+        } else {
+          console.error('Failed to fetch diagnostic center details')
+        }
+      } catch (error) {
+        console.error('Error fetching diagnostic center details:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  const filteredReports = reports.filter(
-    (report) =>
-      report.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      report.test.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    fetchCenterDetails()
+  }, [])
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch('/api/orders/get-orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ diagnosticCenterId: '06e3c415-25d9-4d76-b28c-7e75d62698b0' }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch orders');
+        }
+
+        const data = await response.json();
+        setOrders(data);
+      } catch (err) {
+        setOrderError(err.message);
+      } finally {
+        setOrderLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+  if (!center) {
+    return <div>Center not found</div>
+  }
+
+  const handleViewOrder = (orderId) => {
+    setSelectedOrderId(orderId);
+  };
+
+  const getStatusBadgeVariant = (status) => {
+    switch (status) {
+      case "pending":
+        return "warning";
+      case "confirmed":
+        return "success";
+      case "completed":
+        return "default";
+      case "cancelled":
+        return "destructive";
+      default:
+        return "secondary";
+    }
+  };
+
+  const getPaymentStatusBadgeVariant = (status) => {
+    switch (status) {
+      case "paid":
+        return "success";
+      case "pending":
+        return "warning";
+      case "failed":
+        return "destructive";
+      default:
+        return "secondary";
+    }
+  };
 
   return (
     <WhiteCard className="max-w-6xl m-5 mx-auto">
       <div className="container mx-auto p-4">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-            {centerInfo.name}
+            {center.name}
           </h1>
           <p className="text-gray-600 my-1 dark:text-gray-300">
-            {centerInfo.address}
+            {center.address}
           </p>
           <p className="text-gray-600 dark:text-gray-300">
-            {centerInfo.contact} | {centerInfo.email}
+            {center.phoneNo.value} | {center.email}
           </p>
         </header>
 
@@ -179,7 +158,7 @@ export default function DashboardWithCard() {
               <Beaker className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{tests.length}</div>
+              <div className="text-2xl font-bold">{center.tests.length}</div>
             </CardContent>
           </Card>
           <Card>
@@ -192,9 +171,9 @@ export default function DashboardWithCard() {
             <CardContent>
               <div className="text-2xl font-bold">
                 {
-                  appointments.filter(
+                  center.appointments ? center.appointments.filter(
                     (a) => a.date === new Date().toISOString().split("T")[0]
-                  ).length
+                  ).length : 0
                 }
               </div>
             </CardContent>
@@ -208,185 +187,208 @@ export default function DashboardWithCard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {reports.filter((r) => r.status !== "Ready").length}
+                {center.reports ? center.reports.filter((r) => r.status !== "Ready").length : 0}
               </div>
             </CardContent>
           </Card>
         </div>
 
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-semibold">Center Details</h2>
+          <div className="flex space-x-2">
+            <Button onClick={() => {
+              setFormType('test')
+              setShowForm(true)
+            }}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Test
+            </Button>
+            <Button onClick={() => {
+              setFormType('package')
+              setShowForm(true)
+            }}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Package
+            </Button>
+          </div>
+        </div>
+
+        <div className="mb-8">
+          <h3 className="font-semibold mb-2">Services:</h3>
+          <div className="flex space-x-4">
+            {center.services.homeSampleCollection && (
+              <Badge>Home Sample Collection</Badge>
+            )}
+            {center.services.onlineReports && (
+              <Badge>Online Reports</Badge>
+            )}
+          </div>
+        </div>
+
+        {center.certifications?.length > 0 && (
+          <div className="mb-8">
+            <h3 className="font-semibold mb-2">Certifications:</h3>
+            <div className="flex flex-wrap gap-2">
+              {center.certifications.map((cert, index) => (
+                <Badge key={index} variant="outline">{cert}</Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {center.accreditations?.length > 0 && (
+          <div className="mb-8">
+            <h3 className="font-semibold mb-2">Accreditations:</h3>
+            <div className="flex flex-wrap gap-2">
+              {center.accreditations.map((accr, index) => (
+                <Badge key={index} variant="outline">{accr}</Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
         <Tabs defaultValue="tests" className="space-y-4">
           <TabsList>
             <TabsTrigger value="tests">Tests</TabsTrigger>
-            <TabsTrigger value="appointments">Appointments</TabsTrigger>
+            <TabsTrigger value="packages">Packages</TabsTrigger>
+            <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
           <TabsContent value="tests" className="space-y-4">
-            <h2 className="text-2xl mt-8 font-semibold">Available Tests</h2>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Test Name</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Turnaround Time</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tests.map((test) => (
-                  <TableRow key={test.id}>
-                    <TableCell className="font-medium">{test.name}</TableCell>
-                    <TableCell>${test.price}</TableCell>
-                    <TableCell>{test.turnaroundTime}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <h2 className="text-2xl font-semibold mb-4">Available Tests</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {center.tests.map((test) => (
+                <div key={test.id} className="bg-gray-50 rounded-lg p-4">
+                  {test.image && (
+                    <Image
+                      src={test.image}
+                      alt={test.name}
+                      width={100}
+                      height={100}
+                      className="rounded-lg object-cover mb-2"
+                    />
+                  )}
+                  <h3 className="font-semibold">{test.name}</h3>
+                  <p className="text-gray-600">Price: ₹{test.price}</p>
+                  {test.description && (
+                    <p className="text-gray-600 text-sm mt-1">{test.description}</p>
+                  )}
+                  {test.speciality && (
+                    <Badge className="mt-2" variant="secondary">{test.speciality}</Badge>
+                  )}
+                </div>
+              ))}
+            </div>
           </TabsContent>
-          <TabsContent value="appointments" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl mt-8 font-semibold">Appointments</h2>
-              <div className="flex items-center space-x-2">
-                <Input
-                  placeholder="Search appointments..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="max-w-sm"
-                />
-                <Search className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </div>
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Appointment Calendar</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    className="rounded-md border"
-                  />
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Upcoming Appointments</CardTitle>
-                  <CardDescription>
-                    {date ? date.toDateString() : "Select a date"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Patient</TableHead>
-                        <TableHead>Test</TableHead>
-                        <TableHead>Time</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredAppointments.map((appointment) => (
-                        <TableRow key={appointment.id}>
-                          <TableCell className="font-medium">
-                            <div className="flex items-center space-x-2">
-                              <Avatar className="h-8 w-8">
-                                <AvatarImage
-                                  src={`https://api.dicebear.com/6.x/initials/svg?seed=${appointment.patientName}`}
-                                  alt={appointment.patientName}
-                                />
-                                <AvatarFallback>
-                                  {appointment.patientName
-                                    .split(" ")
-                                    .map((n) => n[0])
-                                    .join("")}
-                                </AvatarFallback>
-                              </Avatar>
-                              <span>{appointment.patientName}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>{appointment.test}</TableCell>
-                          <TableCell>{appointment.time}</TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                appointment.status === "Completed"
-                                  ? "secondary"
-                                  : appointment.status === "In Progress"
-                                  ? "default"
-                                  : "outline"
-                              }
-                            >
-                              {appointment.status}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
+          <TabsContent value="packages" className="space-y-4">
+            <h2 className="text-2xl font-semibold mb-4">Available Packages</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {center.packages.map((pkg) => (
+                <div key={pkg.id} className="bg-gray-50 rounded-lg p-4">
+                  {pkg.image && (
+                    <Image
+                      src={pkg.image}
+                      alt={pkg.name}
+                      width={100}
+                      height={100}
+                      className="rounded-lg object-cover mb-2"
+                    />
+                  )}
+                  <h3 className="font-semibold">{pkg.name}</h3>
+                  <p className="text-gray-600">Price: ₹{pkg.price}</p>
+                  <p className="text-gray-600">Tests Included: {pkg.testCount}</p>
+                  {pkg.description && (
+                    <p className="text-gray-600 text-sm mt-1">{pkg.description}</p>
+                  )}
+                  {pkg.specialities?.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {pkg.specialities.map((spec, index) => (
+                        <Badge key={index} variant="secondary">{spec}</Badge>
                       ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
+          </TabsContent>
+          <TabsContent value="orders" className="space-y-4">
+            {orderLoading ? (
+              <div>Loading...</div>
+            ) : orderError ? (
+              <div>Error: {orderError}</div>
+            ) : selectedOrderId ? (
+              <ViewOrder orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} />
+            ) : (
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Order ID</TableHead>
+                      <TableHead>Patient Name</TableHead>
+                      <TableHead>Test Name</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Payment</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {orders.map((order) => (
+                      <TableRow key={order.id}>
+                        <TableCell className="font-medium">{order.id}</TableCell>
+                        <TableCell>{order.patientName}</TableCell>
+                        <TableCell>{order.item.name}</TableCell>
+                        <TableCell>₹{order.totalAmount}</TableCell>
+                        <TableCell>
+                          <Badge variant={getStatusBadgeVariant(order.status)}>
+                            {order.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={getPaymentStatusBadgeVariant(order.paymentStatus)}>
+                            {order.paymentStatus}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(order.appointmentDate).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewOrder(order.id)}
+                          >
+                            View Details
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </TabsContent>
           <TabsContent value="reports" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl mt-8 font-semibold">Reports</h2>
-              <div className="flex items-center space-x-2">
-                <Input
-                  placeholder="Search reports..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="max-w-sm"
-                />
-                <Search className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Patient Name</TableHead>
-                  <TableHead>Test</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredReports.map((report) => (
-                  <TableRow key={report.id}>
-                    <TableCell className="font-medium">
-                      {report.patientName}
-                    </TableCell>
-                    <TableCell>{report.test}</TableCell>
-                    <TableCell>{report.date}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          report.status === "Ready"
-                            ? "secondary"
-                            : report.status === "Processing"
-                            ? "default"
-                            : "outline"
-                        }
-                      >
-                        {report.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {report.status === "Ready" && (
-                        <Button variant="outline" size="sm">
-                          <Download className="mr-2 h-4 w-4" />
-                          Download
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            {/* Reports content */}
           </TabsContent>
         </Tabs>
       </div>
+
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md">
+            <h2 className="text-xl font-semibold mb-4">
+              Add {formType.charAt(0).toUpperCase() + formType.slice(1)} to {center.name}
+            </h2>
+            {formType === 'test' ? (
+              <AddTestForm onClose={() => setShowForm(false)} diagnosticCenterId={center.id} />
+            ) : (
+              <AddPackageForm onClose={() => setShowForm(false)} diagnosticCenterId={center.id} />
+            )}
+          </div>
+        </div>
+      )}
     </WhiteCard>
   );
 }
