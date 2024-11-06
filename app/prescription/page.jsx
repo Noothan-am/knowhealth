@@ -69,10 +69,10 @@ const UploadPrescriptionPage = () => {
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files?.[0];
-    if (selectedFile && selectedFile.type === "application/pdf") {
+    if (selectedFile && selectedFile.type.startsWith("image/")) {
       setFile(selectedFile);
     } else {
-      showToast("Please upload a PDF file.", "error");
+      showToast("Please upload an image file.", "error");
     }
   };
 
@@ -114,19 +114,20 @@ const UploadPrescriptionPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (
-      !age ||
-      ageError ||
-      !date ||
-      phoneError ||
-      emailError ||
-      !specialty ||
-      !Id ||
-      !who
-    ) {
-      showToast("Please fix the errors before submitting.", "error");
-      return;
-    }
+    console.log("submitting form", age, date, phone, email, specialty, Id, who);
+
+    // if (
+    //   !age ||
+    //   !ageError ||
+    //   !date ||
+    //   !phoneError ||
+    //   !emailError ||
+    //   !specialty ||
+    //   !who
+    // ) {
+    //   showToast("Please fix the errors before submitting.", "error");
+    //   return;
+    // }
     console.log(event.target);
 
     const formData = new FormData(event.target);
@@ -287,14 +288,14 @@ const UploadPrescriptionPage = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="prescription">
-                  Upload Prescription (PDF only)
+                  Upload Prescription (Image only)
                 </Label>
                 <div className="flex items-center space-x-2">
                   <Input
                     id="prescription"
                     name="prescription"
                     type="file"
-                    accept=".pdf"
+                    accept="image/*"
                     onChange={handleFileChange}
                     className="hidden"
                   />

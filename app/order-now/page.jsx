@@ -1,68 +1,76 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { StarRating } from "@/components/ui/star-rating"
-import { Calendar } from "@/components/ui/calendar"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { MapPin, Clock, CreditCard, Home, Building, Phone, Mail } from 'lucide-react'
-import Image from 'next/image'
-import { useRouter, useSearchParams } from 'next/navigation'
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { StarRating } from "@/components/ui/star-rating";
+import { Calendar } from "@/components/ui/calendar";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import {
+  MapPin,
+  Clock,
+  CreditCard,
+  Home,
+  Building,
+  Phone,
+  Mail,
+} from "lucide-react";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function OrderNowPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const testId = searchParams.get('testId')
-  const diagnosticCenterId = searchParams.get('diagnosticCenterId')
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const testId = searchParams.get("testId");
+  const diagnosticCenterId = searchParams.get("diagnosticCenterId");
 
-  const [test, setTest] = useState(null)
-  const [center, setCenter] = useState(null)
-  const [selectedDate, setSelectedDate] = useState(new Date())
-  const [collectionType, setCollectionType] = useState('center')
+  const [test, setTest] = useState(null);
+  const [center, setCenter] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [collectionType, setCollectionType] = useState("center");
   const [address, setAddress] = useState({
-    street: '',
-    city: '',
-    state: '',
-    pincode: ''
-  })
-  const [paymentMethod, setPaymentMethod] = useState('online')
-  const [loading, setLoading] = useState(true)
-  const [showOrderForm, setShowOrderForm] = useState(false)
-  const [userId] = useState("9d3e6c23-8bed-44ea-af69-aa6f831e7dd3")
-  const [patientName, setPatientName] = useState('')
-  const [patientAge, setPatientAge] = useState('')
-  const [patientPhoneNumber, setPatientPhoneNumber] = useState('')
+    street: "",
+    city: "",
+    state: "",
+    pincode: "",
+  });
+  const [paymentMethod, setPaymentMethod] = useState("online");
+  const [loading, setLoading] = useState(true);
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [userId] = useState("9d3e6c23-8bed-44ea-af69-aa6f831e7dd3");
+  const [patientName, setPatientName] = useState("");
+  const [patientAge, setPatientAge] = useState("");
+  const [patientPhoneNumber, setPatientPhoneNumber] = useState("");
 
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const centerResponse = await fetch('/api/get-diagnosticcenter/id', {
-          method: 'POST',
+        const centerResponse = await fetch("/api/get-diagnosticcenter/id", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ centerId: diagnosticCenterId }),
         });
 
         if (!centerResponse.ok) {
-          throw new Error('Failed to fetch diagnostic center details');
+          throw new Error("Failed to fetch diagnostic center details");
         }
 
         const centerData = await centerResponse.json();
         setCenter(centerData);
 
-        const testData = centerData.tests.find(test => test.id === testId);
+        const testData = centerData.tests.find((test) => test.id === testId);
         if (!testData) {
-          throw new Error('Test not found in the diagnostic center');
+          throw new Error("Test not found in the diagnostic center");
         }
         setTest(testData);
 
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching details:', error);
+        console.error("Error fetching details:", error);
         setLoading(false);
       }
     };
@@ -73,51 +81,64 @@ export default function OrderNowPage() {
   }, [testId, diagnosticCenterId]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
-    console.log('Submitting with userId:', userId)
-    
+    e.preventDefault();
+
+    console.log("Submitting with userId:", userId);
+
     const orderData = {
       userId: userId,
       diagnosticCenterId: diagnosticCenterId,
       test: {
-        type: 'test',
+        type: "test",
         id: testId,
         name: test.name,
-        price: test.price
+        price: test.price,
       },
       totalAmount: test.price,
       paymentMethod: paymentMethod,
       appointmentDate: selectedDate,
-      isHomeSampleCollection: collectionType === 'home',
-      address: collectionType === 'home' ? address : null,
+      isHomeSampleCollection: collectionType === "home",
+      address: collectionType === "home" ? address : null,
       paymentMethod: paymentMethod,
       totalAmount: test.price,
       patientName: patientName,
       patientAge: parseInt(patientAge),
-      patientPhoneNumber: patientPhoneNumber
-    }
+      patientPhoneNumber: patientPhoneNumber,
+    };
 
     try {
-      const response = await fetch('/api/orders/create-order', {
-        method: 'POST',
+      const response = await fetch("/api/orders/create-order", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(orderData)
-      })
+        body: JSON.stringify(orderData),
+      });
 
       if (response.ok) {
         const data = await response.json();
         router.push(`/confirmation?orderId=${data.data.id}`);
       }
     } catch (error) {
-      console.error('Error creating order:', error)
+      console.error("Error creating order:", error);
     }
-  }
+  };
+
+  const handleContinue = () => {
+    const role = localStorage.getItem("role");
+    if (role === null || role != "consumer") {
+      window.location.href = "/login";
+    } else {
+      setShowOrderForm(true);
+    }
+  };
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -152,7 +173,8 @@ export default function OrderNowPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <MapPin className="h-4 w-4 text-gray-500" />
                   <span className="text-gray-600">
-                    {center.address}, {center.city}, {center.state} - {center.pincode}
+                    {center.address}, {center.city}, {center.state} -{" "}
+                    {center.pincode}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
@@ -168,13 +190,16 @@ export default function OrderNowPage() {
                   <Clock className="h-4 w-4 inline mr-2" />
                   {center.timings}
                 </div>
-                
+
                 {center.certifications?.length > 0 && (
                   <div className="mt-3">
                     <h4 className="font-semibold mb-1">Certifications</h4>
                     <div className="flex flex-wrap gap-2">
                       {center.certifications.map((cert, index) => (
-                        <span key={index} className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                        <span
+                          key={index}
+                          className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded"
+                        >
                           {cert}
                         </span>
                       ))}
@@ -187,7 +212,10 @@ export default function OrderNowPage() {
                     <h4 className="font-semibold mb-1">Accreditations</h4>
                     <div className="flex flex-wrap gap-2">
                       {center.accreditations.map((accr, index) => (
-                        <span key={index} className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">
+                        <span
+                          key={index}
+                          className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded"
+                        >
                           {accr}
                         </span>
                       ))}
@@ -200,7 +228,10 @@ export default function OrderNowPage() {
                     <h4 className="font-semibold mb-1">Specialities</h4>
                     <div className="flex flex-wrap gap-2">
                       {center.specialities.map((speciality, index) => (
-                        <span key={index} className="text-sm bg-purple-100 text-purple-800 px-2 py-1 rounded">
+                        <span
+                          key={index}
+                          className="text-sm bg-purple-100 text-purple-800 px-2 py-1 rounded"
+                        >
                           {speciality}
                         </span>
                       ))}
@@ -211,10 +242,23 @@ export default function OrderNowPage() {
                 <div className="mt-3">
                   <h4 className="font-semibold mb-1">Services</h4>
                   <div className="flex gap-4 text-sm text-gray-600">
-                    <span className={center.services.homeSampleCollection ? "text-green-600" : "text-red-600"}>
-                      {center.services.homeSampleCollection ? "✓" : "✗"} Home Collection
+                    <span
+                      className={
+                        center.services.homeSampleCollection
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
+                      {center.services.homeSampleCollection ? "✓" : "✗"} Home
+                      Collection
                     </span>
-                    <span className={center.services.onlineReports ? "text-green-600" : "text-red-600"}>
+                    <span
+                      className={
+                        center.services.onlineReports
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
                       {center.services.onlineReports ? "✓" : "✗"} Online Reports
                     </span>
                   </div>
@@ -224,7 +268,7 @@ export default function OrderNowPage() {
           </Card>
 
           {!showOrderForm && (
-            <Button onClick={() => setShowOrderForm(true)} className="w-full">
+            <Button onClick={handleContinue} className="w-full">
               Continue
             </Button>
           )}
@@ -259,7 +303,9 @@ export default function OrderNowPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">Select Appointment Date</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Select Appointment Date
+                  </h3>
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -270,8 +316,13 @@ export default function OrderNowPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">Sample Collection</h3>
-                  <RadioGroup value={collectionType} onValueChange={setCollectionType}>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Sample Collection
+                  </h3>
+                  <RadioGroup
+                    value={collectionType}
+                    onValueChange={setCollectionType}
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="center" id="center" />
                       <Label htmlFor="center">
@@ -289,35 +340,46 @@ export default function OrderNowPage() {
                   </RadioGroup>
                 </div>
 
-                {collectionType === 'home' && (
+                {collectionType === "home" && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">Address Details</h3>
                     <Input
                       placeholder="Street Address"
                       value={address.street}
-                      onChange={(e) => setAddress({...address, street: e.target.value})}
+                      onChange={(e) =>
+                        setAddress({ ...address, street: e.target.value })
+                      }
                     />
                     <Input
                       placeholder="City"
                       value={address.city}
-                      onChange={(e) => setAddress({...address, city: e.target.value})}
+                      onChange={(e) =>
+                        setAddress({ ...address, city: e.target.value })
+                      }
                     />
                     <Input
                       placeholder="State"
                       value={address.state}
-                      onChange={(e) => setAddress({...address, state: e.target.value})}
+                      onChange={(e) =>
+                        setAddress({ ...address, state: e.target.value })
+                      }
                     />
                     <Input
                       placeholder="Pincode"
                       value={address.pincode}
-                      onChange={(e) => setAddress({...address, pincode: e.target.value})}
+                      onChange={(e) =>
+                        setAddress({ ...address, pincode: e.target.value })
+                      }
                     />
                   </div>
                 )}
 
                 <div>
                   <h3 className="text-lg font-semibold mb-4">Payment Method</h3>
-                  <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
+                  <RadioGroup
+                    value={paymentMethod}
+                    onValueChange={setPaymentMethod}
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="online" id="online" />
                       <Label htmlFor="online">
@@ -341,5 +403,5 @@ export default function OrderNowPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

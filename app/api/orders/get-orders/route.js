@@ -3,14 +3,22 @@ import dbConnect from "@/config/dbconnect";
 import Order from "@/models/orders";
 import { NextResponse } from "next/server";
 
-const getOrdersSchema = z.object({
-  userId: z.string().optional(),
-  diagnosticCenterId: z.string().optional()
-}).refine(data => {
-  return (data.userId !== undefined) !== (data.diagnosticCenterId !== undefined);
-}, {
-  message: "Either userId or diagnosticCenterId must be provided, but not both"
-});
+const getOrdersSchema = z
+  .object({
+    userId: z.string().optional(),
+    diagnosticCenterId: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      return (
+        (data.userId !== undefined) !== (data.diagnosticCenterId !== undefined)
+      );
+    },
+    {
+      message:
+        "Either userId or diagnosticCenterId must be provided, but not both",
+    }
+  );
 
 export async function POST(req) {
   try {
@@ -28,18 +36,14 @@ export async function POST(req) {
     const query = userId ? { userId } : { diagnosticCenterId };
 
     const orders = await Order.find(query)
-      .select('-_id')
+      .select("-_id")
       .sort({ createdAt: -1 });
 
     if (!orders.length) {
-      return NextResponse.json(
-        { message: "No orders found" },
-        { status: 404 }
-      );
+      return NextResponse.json([], { status: 200 });
     }
 
     return NextResponse.json(orders, { status: 200 });
-
   } catch (error) {
     console.error(error);
     return NextResponse.json(

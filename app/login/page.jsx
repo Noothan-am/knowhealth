@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -14,10 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Toaster, toast } from "sonner";
+import { useAllUsersData } from "@/app/context/userDataContext";
 
 export default function LoginPage() {
   const [activeTab, setActiveTab] = useState("consumer");
   const [loginError, setLoginError] = useState(null);
+  const { setUser } = useAllUsersData();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,8 +37,11 @@ export default function LoginPage() {
         setLoginError(data.error);
       } else {
         toast.success("login successful");
+        setUser({ ...data.user, role: activeTab });
+        localStorage.clear();
+        localStorage.setItem("role", activeTab);
         localStorage.setItem(
-          "user",
+          "Data",
           JSON.stringify({ ...data.user, role: activeTab })
         );
         window.location.href = "/";
@@ -50,8 +54,8 @@ export default function LoginPage() {
   return (
     <>
       <Toaster position="top-right" richColors />
-      <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-screen">
-        <Card className="w-full max-w-md">
+      <div className="container mx-auto px-4 py-8 min-w-80 flex justify-center items-center min-h-screen">
+        <Card className="w-3/6">
           <CardHeader>
             <CardTitle>Login to Know My Health</CardTitle>
             <CardDescription>
@@ -60,9 +64,13 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="consumer">Consumer</TabsTrigger>
                 <TabsTrigger value="doctor">Doctor</TabsTrigger>
+                <TabsTrigger value="diagnostics-admin">
+                  Diagnostics Admin
+                </TabsTrigger>
+                <TabsTrigger value="admin">Admin</TabsTrigger>
               </TabsList>
               <TabsContent value="consumer">
                 <form onSubmit={handleSubmit}>
@@ -118,6 +126,64 @@ export default function LoginPage() {
                     </div>
                     <Button type="submit" className="w-full">
                       Login as Doctor
+                    </Button>
+                  </div>
+                </form>
+              </TabsContent>
+              <TabsContent value="diagnostics-admin">
+                <form onSubmit={handleSubmit}>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="diagnostics-email">Email</Label>
+                      <Input
+                        id="diagnostics-email"
+                        type="email"
+                        placeholder="Enter your email"
+                        required
+                        name="email"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="diagnostics-password">Password</Label>
+                      <Input
+                        id="diagnostics-password"
+                        type="password"
+                        placeholder="Enter your password"
+                        required
+                        name="password"
+                      />
+                    </div>
+                    <Button type="submit" className="w-full">
+                      Login as Diagnostics Lab Admin
+                    </Button>
+                  </div>
+                </form>
+              </TabsContent>
+              <TabsContent value="admin">
+                <form onSubmit={handleSubmit}>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="Enter your email"
+                        required
+                        name="email"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="password">Password</Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        required
+                        name="password"
+                      />
+                    </div>
+                    <Button type="submit" className="w-full">
+                      Login as Admin
                     </Button>
                   </div>
                 </form>

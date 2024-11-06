@@ -21,7 +21,7 @@ import {
   Video,
   Microscope,
 } from "lucide-react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 export default function PatientDashboard() {
   const [diagnosticAppointments, setDiagnosticAppointments] = useState([]);
@@ -30,18 +30,26 @@ export default function PatientDashboard() {
   const router = useRouter();
 
   useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role === null || role != "consumer") {
+      window.location.href = "/login";
+    }
+    const details = JSON.parse(localStorage.getItem("Data"));
+    console.log(details.id);
     const fetchDiagnosticAppointments = async () => {
       try {
-        const response = await fetch('/api/orders/get-orders', {
-          method: 'POST',
+        const response = await fetch("/api/orders/get-orders", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId: "9d3e6c23-8bed-44ea-af69-aa6f831e7dd3" }), // Replace with actual user ID
+          body: JSON.stringify({
+            userId: details.id,
+          }),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch diagnostic appointments');
+          throw new Error("Failed to fetch diagnostic appointments");
         }
 
         const data = await response.json();
@@ -186,6 +194,7 @@ export default function PatientDashboard() {
                   ) : error ? (
                     <p>Error: {error}</p>
                   ) : (
+                    diagnosticAppointments.length != 0 &&
                     diagnosticAppointments.map((appointment) => (
                       <div
                         key={appointment.id}
@@ -197,7 +206,13 @@ export default function PatientDashboard() {
                             {appointment.diagnosticCenterId}
                           </p>
                           <p className="text-sm">
-                            {new Date(appointment.appointmentDate).toLocaleDateString()} at {new Date(appointment.appointmentDate).toLocaleTimeString()}
+                            {new Date(
+                              appointment.appointmentDate
+                            ).toLocaleDateString()}{" "}
+                            at{" "}
+                            {new Date(
+                              appointment.appointmentDate
+                            ).toLocaleTimeString()}
                           </p>
                         </div>
                         <div className="flex items-center">
@@ -205,8 +220,8 @@ export default function PatientDashboard() {
                             <Microscope className="mr-1 h-3 w-3" />
                             Diagnostic
                           </Badge>
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="icon"
                             onClick={() => handleViewOrder(appointment.id)}
                           >

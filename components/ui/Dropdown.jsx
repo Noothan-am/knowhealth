@@ -24,9 +24,11 @@ export default function Dropdown({ setWho, setId }) {
   const [selectedOption, setSelectedOption] = React.useState(options[0]);
   const [allDoctors, setAllDoctors] = React.useState([]);
   React.useEffect(() => {
+    console.log("i am hre");
+
     const fetchPrescriptions = async () => {
       try {
-        const response = await fetch("/api/doctor");
+        const response = await fetch("/api/user");
         if (!response.ok) {
           throw new Error("Failed to fetch prescriptions");
         }

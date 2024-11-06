@@ -20,3 +20,20 @@ export async function POST(request) {
     );
   }
 }
+
+export async function GET(request) {
+  await dbConnect();
+  try {
+    const users = await User.find();
+    if (!users) {
+      return NextResponse.json({ error: "No users found" }, { status: 404 });
+    }
+    return NextResponse.json(users, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

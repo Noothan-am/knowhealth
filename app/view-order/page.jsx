@@ -1,11 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, User, Phone, CreditCard, Clock, Home, Building, Mail } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import {
+  Calendar,
+  MapPin,
+  User,
+  Phone,
+  CreditCard,
+  Clock,
+  Home,
+  Building,
+  Mail,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 
 export default function ViewOrderPage() {
@@ -13,47 +23,46 @@ export default function ViewOrderPage() {
   const [center, setCenter] = useState(null);
   const searchParams = useSearchParams();
   const router = useRouter();
-  const orderId = searchParams.get('orderId');
-  const [userId] = useState("9d3e6c23-8bed-44ea-af69-aa6f831e7dd3"); // Replace with actual user ID
+  const orderId = searchParams.get("orderId");
+  const [userId] = useState("9d3e6c23-8bed-44ea-af69-aa6f831e7dd3");
 
   useEffect(() => {
     const fetchOrderAndCenter = async () => {
       try {
         // Fetch order details
-        const orderResponse = await fetch('/api/orders/get-orders', {
-          method: 'POST',
+        const orderResponse = await fetch("/api/orders/get-orders", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ userId }),
         });
 
         if (!orderResponse.ok) {
-          throw new Error('Failed to fetch order');
+          throw new Error("Failed to fetch order");
         }
 
         const orderData = await orderResponse.json();
-        const currentOrder = orderData.find(order => order.id === orderId);
+        const currentOrder = orderData.find((order) => order.id === orderId);
         setOrder(currentOrder);
 
         // Fetch diagnostic center details
-        const centerResponse = await fetch('/api/get-diagnosticcenter/id', {
-          method: 'POST',
+        const centerResponse = await fetch("/api/get-diagnosticcenter/id", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ centerId: currentOrder.diagnosticCenterId }),
         });
 
         if (!centerResponse.ok) {
-          throw new Error('Failed to fetch diagnostic center details');
+          throw new Error("Failed to fetch diagnostic center details");
         }
 
         const centerData = await centerResponse.json();
         setCenter(centerData);
-
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -77,11 +86,17 @@ export default function ViewOrderPage() {
         <CardContent className="space-y-6">
           <div className="bg-gray-50 p-4 rounded-lg text-center">
             <p className="text-lg">Order ID: {order.id}</p>
-            <Badge variant={
-              order.status === 'completed' ? 'success' :
-              order.status === 'confirmed' ? 'info' :
-              order.status === 'cancelled' ? 'destructive' : 'default'
-            }>
+            <Badge
+              variant={
+                order.status === "completed"
+                  ? "success"
+                  : order.status === "confirmed"
+                  ? "info"
+                  : order.status === "cancelled"
+                  ? "destructive"
+                  : "default"
+              }
+            >
               {order.status.toUpperCase()}
             </Badge>
           </div>
@@ -91,8 +106,12 @@ export default function ViewOrderPage() {
               <User className="w-5 h-5 text-gray-500" />
               <div>
                 <p className="font-medium">Patient Details</p>
-                <p className="text-sm text-gray-600">{order.patientName}, {order.patientAge} years</p>
-                <p className="text-sm text-gray-600">Phone: {order.patientPhoneNumber}</p>
+                <p className="text-sm text-gray-600">
+                  {order.patientName}, {order.patientAge} years
+                </p>
+                <p className="text-sm text-gray-600">
+                  Phone: {order.patientPhoneNumber}
+                </p>
               </div>
             </div>
 
@@ -101,11 +120,11 @@ export default function ViewOrderPage() {
               <div>
                 <p className="font-medium">Appointment Date</p>
                 <p className="text-sm text-gray-600">
-                  {new Date(order.appointmentDate).toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                  {new Date(order.appointmentDate).toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </p>
               </div>
@@ -116,7 +135,9 @@ export default function ViewOrderPage() {
               <div>
                 <p className="font-medium">Test Details</p>
                 <p className="text-sm text-gray-600">{order.item.name}</p>
-                <p className="text-sm text-gray-600">Price: ₹{order.item.price}</p>
+                <p className="text-sm text-gray-600">
+                  Price: ₹{order.item.price}
+                </p>
               </div>
             </div>
 
@@ -125,8 +146,13 @@ export default function ViewOrderPage() {
               <div>
                 <p className="font-medium">Diagnostic Center Details</p>
                 <p className="text-sm text-gray-600">{center.name}</p>
-                <p className="text-sm text-gray-600">{center.address}, {center.city}, {center.state} - {center.pincode}</p>
-                <p className="text-sm text-gray-600">Phone: {center.phoneNo.value}</p>
+                <p className="text-sm text-gray-600">
+                  {center.address}, {center.city}, {center.state} -{" "}
+                  {center.pincode}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Phone: {center.phoneNo.value}
+                </p>
                 <p className="text-sm text-gray-600">Email: {center.email}</p>
               </div>
             </div>
@@ -137,7 +163,8 @@ export default function ViewOrderPage() {
                 <div>
                   <p className="font-medium">Home Sample Collection</p>
                   <p className="text-sm text-gray-600">
-                    {order.address.street}, {order.address.city}, {order.address.state} - {order.address.pincode}
+                    {order.address.street}, {order.address.city},{" "}
+                    {order.address.state} - {order.address.pincode}
                   </p>
                 </div>
               </div>
@@ -146,7 +173,9 @@ export default function ViewOrderPage() {
                 <MapPin className="w-5 h-5 text-gray-500" />
                 <div>
                   <p className="font-medium">Center Visit</p>
-                  <p className="text-sm text-gray-600">Please visit the diagnostic center at the scheduled time</p>
+                  <p className="text-sm text-gray-600">
+                    Please visit the diagnostic center at the scheduled time
+                  </p>
                 </div>
               </div>
             )}
@@ -169,10 +198,11 @@ export default function ViewOrderPage() {
           </div>
 
           <div className="flex justify-center gap-4 pt-4">
-            <Button onClick={() => window.print()}>
-              Print Details
-            </Button>
-            <Button variant="outline" onClick={() => router.push('/admin-dashboard?tab=orders')}>
+            <Button onClick={() => window.print()}>Print Details</Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push("/admin-dashboard?tab=orders")}
+            >
               Back to Orders
             </Button>
           </div>

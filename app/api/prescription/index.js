@@ -8,8 +8,8 @@ export async function handleFile(formData) {
   try {
     const file = formData.get("file");
 
-    // if (!file.name.endsWith(".pdf") && file.type !== "application/pdf") {
-    //   console.error("Invalid file type. Only PDF files are allowed.");
+    // if (!file.name.endsWith(".jpg") && !file.name.endsWith(".jpeg") && !file.name.endsWith(".png") && file.type !== "image/jpeg" && file.type !== "image/png") {
+    //   console.error("Invalid file type. Only image files are allowed.");
     //   return;
     // }
 
@@ -21,14 +21,14 @@ export async function handleFile(formData) {
 
     const { url, fields } = await createPresignedPost(client, {
       Bucket: process.env.AWS_BUCKET_NAME || "",
-      Key: `${id}.pdf`,
-      Conditions: [["eq", "$Content-Type", "application/pdf"]],
+      Key: `${id}.${file.type.split("/")[1]}`,
+      Conditions: [["eq", "$Content-Type", file.type]],
       Fields: {
-        "Content-Type": "application/pdf",
+        "Content-Type": file.type,
       },
     });
 
-    const finalUrl = `${url + id}.pdf`;
+    const finalUrl = `${url + id}.${file.type.split("/")[1]}`;
 
     const formDataS3 = new FormData();
     Object.entries(fields).forEach(([key, value]) => {

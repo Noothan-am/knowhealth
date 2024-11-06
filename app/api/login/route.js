@@ -3,6 +3,8 @@ import User from "@/models/users";
 import Doctor from "@/models/doctors";
 import dbConnect from "@/config/dbconnect";
 import bcrypt from "bcrypt";
+import DiagnosticCenter from "@/models/diagnosticCenter";
+import Admin from "@/models/admin";
 
 export async function POST(request) {
   await dbConnect();
@@ -13,8 +15,6 @@ export async function POST(request) {
   const password = formData.get("password");
   const activeTab = formData.get("activeTab");
 
-  console.log(email, password, activeTab);
-
   if (!email || !password || !activeTab) {
     return NextResponse.json(
       { error: "All fields are required" },
@@ -24,9 +24,15 @@ export async function POST(request) {
 
   let user;
   if (activeTab === "consumer") {
-    user = await User.findOne({ email }).select("-password");
+    user = await User.findOne({ email });
   } else if (activeTab === "doctor") {
     user = await Doctor.findOne({ email });
+    console.log(user);
+  } else if (activeTab === "diagnostics-admin") {
+    user = await DiagnosticCenter.findOne({ email });
+    console.log(user);
+  } else if (activeTab === "admin") {
+    user = await Admin.findOne({ email });
     console.log(user);
   } else {
     return NextResponse.json(
