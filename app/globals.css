@@ -3,7 +3,22 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'CustomFont2', sans-serif;
+}
+header{
+  font-family: 'CustomFont2', sans-serif;
+}
+@font-face {
+  font-family: 'CustomFont';
+  src: url('/fonts/Poppins-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'CustomFont2';
+  src: url('/fonts/Poppins-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
 }
 .placeholder-sm::placeholder {
   font-size: 0.9rem; /* Adjust the font size as needed */
@@ -114,14 +129,12 @@ body {
   }
 }
 
-@font-face {
-  font-family: 'Poppins';
-  font-weight: 100; 
-  src: url('/fonts/Poppins-Thin.ttf') format('truetype');
+.bubble-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-@font-face {
-  font-family: 'Poppins';
-  font-weight: 700;
-  src: url('/fonts/Poppins-Bold.ttf') format('truetype');
+.bubble-hover:hover {
+  transform: scale(1.05);
 }
+
+

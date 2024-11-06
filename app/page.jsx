@@ -1,257 +1,230 @@
-"use client";
-
-import { useState, useEffect } from "react";
+'use client'
+import { FaHeart, FaMicroscope, FaFileAlt, FaTachometerAlt } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react'
+import Image from "next/image"
+import { ChevronLeft, ChevronRight, Heart, Stethoscope, Microscope, Pill, Calendar, Clock, Phone,Scissors, UserCheck, ChartNoAxesCombined, Shield, PiggyBank } from 'lucide-react'
 import {
-  Stethoscope,
-  Microscope,
   FileText,
-  Scissors,
   LayoutDashboard,
-  Clock,
-  Shield,
   CreditCard,
   User,
 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { Button } from "@/components/ui/button"
+import Link from 'next/link'
+
+const images = [
+  '/banner1.png?height=1080&width=1920',
+  '/banner2.png?height=1080&width=1920&text=Image+2',
+  '/banner3.png?height=1080&width=1920&text=Image+3',
+]
 
 export default function Home() {
-  const [currentBanner, setCurrentBanner] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentBanner((prev) => (prev + 1) % banners.length);
-    }, 5000);
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
+    }, 7000)
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(timer)
+  }, [])
 
-  const partneredLabs = [
-    { name: "HealthLab", logo: "/placeholder.svg?height=100&width=100" },
-    { name: "MediTest", logo: "/placeholder.svg?height=100&width=100" },
-    { name: "BioAnalytics", logo: "/placeholder.svg?height=100&width=100" },
-    { name: "GenomeX", logo: "/placeholder.svg?height=100&width=100" },
-  ];
+  const goToPrevious = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
+  }
 
-  const banners = [
-    { src: "/banners/banner1.jpg", alt: "Banner 1" },
-    { src: "/banners/banner2.png", alt: "Banner 2" },
-    { src: "/banners/banner3.jpg", alt: "Banner 3" },
-  ];
+  const goToNext = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
+  }
 
   return (
-    <div className="bg-gray-100">
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <section className="mb-12 relative">
-          <div className="overflow-hidden rounded-lg shadow-lg">
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentBanner * 100}%)` }}
+    <div className="relative bg-[#f2fbff]">
+      {/* First banner section */}
+      <div className="relative w-full h-[50vh] sm:h-[60vh] md:h-[70vh] lg:h-[80vh] overflow-hidden">
+        {/* Image sliding */}
+        {images.map((src, index) => (
+          <div
+            key={src}
+            className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <Image
+              src={src}
+              alt={`Banner image ${index + 1}`}
+              fill
+              style={{ objectFit: 'cover' }}
+              priority={index === 0}
+            />
+          </div>
+        ))}
+
+        {/* Left and Right Navigation Buttons */}
+        <div className="absolute inset-0 flex items-center justify-between p-2 z-20">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goToPrevious}
+            className="text-white hover:bg-white/20"
+          >
+            <ChevronLeft className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12" />
+            <span className="sr-only">Previous image</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goToNext}
+            className="text-white hover:bg-white/20"
+          >
+            <ChevronRight className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12" />
+            <span className="sr-only">Next image</span>
+          </Button>
+        </div>
+
+        {/* Text Overlay */}
+        <div className="absolute inset-0 flex flex-col justify-center text-white px-4 sm:px-6 md:px-8 lg:px-16 z-10 space-y-4 sm:space-y-6 md:space-y-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">Welcome to Our Website</h1>
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl">Discover amazing features and services</p>
+          <div className="space-x-2 sm:space-x-4">
+            <Button
+              variant="default"
+              size="sm"
+              className="text-xs sm:text-sm md:text-base py-1 px-2 sm:py-2 sm:px-4 md:py-3 md:px-6"
             >
-              {banners.map((banner, index) => (
-                <div key={index} className="w-full flex-shrink-0">
-                  <Image
-                    src={banner.src}
-                    alt={banner.alt}
-                    width={1200}
-                    height={400}
-                    className="w-full h-64 sm:h-96 object-cover"
-                    onError={(e) => (e.target.src = "/fallback.jpg")}
-                  />
-                </div>
-              ))}
-            </div>
+              Get Started
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              className="text-xs sm:text-sm md:text-base py-1 px-2 sm:py-2 sm:px-4 md:py-3 md:px-6"
+            >
+              Learn More
+            </Button>
           </div>
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            {banners.map((_, index) => (
-              <button
-                key={index}
-                className={`w-3 h-3 rounded-[2px] ${
-                  currentBanner === index ? "bg-gray-600" : "bg-gray-300"
-                }`}
-                onClick={() => setCurrentBanner(index)}
-              />
-            ))}
-          </div>
-        </section>
+        </div>
+      </div>
 
-        <section
-          id="explore-services"
-          className="mb-12 p-8 rounded-lg"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(221,229,244,1) 0%, rgba(193,206,233,1) 52%, rgba(191,210,240,1) 100%)",
-          }}
-        >
-          <h2 className="text-3xl text-gray-800 font-semibold mb-2 text-center">
-            Explore Our Services
-          </h2>
-          <p className="text-xl text-gray-600 mb-8 text-center">
-            Comprehensive healthcare solutions at your fingertips
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 justify-center">
-            {[
-              {
-                title: "Consult a Doctor",
-                icon: Stethoscope,
-                color: "#4CAF50",
-                link: "/doctor-dashboard",
-              },
-              {
-                title: "Diagnostics & Lab tests",
-                icon: Microscope,
-                color: "#2196F3",
-                link: "/diagnostics",
-              },
-              {
-                title: "Upload a Prescription",
-                icon: FileText,
-                color: "#FFC107",
-                link: "/prescription",
-              },
-              {
-                title: "Surgery Support",
-                icon: Scissors,
-                color: "#9C27B0",
-                link: "/admin_dashboard",
-              },
-              {
-                title: "Patient Dashboard",
-                icon: LayoutDashboard,
-                color: "#FF5722",
-                link: "/patient-dashboard",
-              },
-            ].map((option, index) => (
-              <Link
-                href={option.link}
-                key={index}
-                className="bg-white rounded-lg shadow-md p-3 flex flex-col items-center justify-center transition-transform hover:scale-105"
-              >
-                <div
-                  className="flex-shrink-0 mb-2"
-                  style={{ color: option.color }}
-                >
-                  <option.icon className="w-8 h-8" />
-                </div>
-                <h3
-                  className="font-medium text-sm text-center"
-                  style={{ color: option.color }}
-                >
-                  {option.title}
-                </h3>
-              </Link>
-            ))}
+      {/* Overlapping section */}
+      <div className="absolute top-[45vh] sm:top-[50vh] md:top-[70vh] lg:top-[75vh] left-1/2 transform -translate-x-1/2 z-30 w-11/12 sm:w-3/4">
+  <div className="bg-[#f2fbff] rounded-lg shadow-xl p-4 sm:p-6">
+    <div className="flex flex-nowrap justify-between items-center text-left space-x-4 overflow-x-auto">
+      {[
+        { icon: UserCheck, title: "Expert Doctors", subheading: "Qualified Professionals", color: "#FF6B6B" },
+        { icon: Clock, title: "24/7 Support", subheading: "Available at All Times", color: "#4ECDC4" },
+        { icon: PiggyBank, title: "Affordable Care", subheading: "Budget-Friendly", color: "#45B7D1" },
+        { icon: Shield, title: "Privacy & Support", subheading: "Confidential Service", color: "#FFA07A" }
+      ].map((item, index) => (
+        <div key={index} className="flex items-center space-x-4 w-1/4 min-w-[250px] sm:w-1/4">
+          <item.icon
+            className="w-6 h-6 sm:w-8 sm:h-8 text-center"
+            style={{ color: item.color }}
+          />
+          <div>
+            <span className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-gray-800">{item.title}</span>
+            <p className="text-xs sm:text-sm md:text-base lg:text-base text-gray-600">{item.subheading}</p>
           </div>
-        </section>
-
-        <section
-          className="mb-12 bg-white p-4 rounded-lg shadow-md"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(221,229,244,1) 0%, rgba(193,206,233,1) 52%, rgba(191,210,240,1) 100%)",
-          }}
-        >
-          <h2 className="text-3xl font-semibold mb-4 text-center">
-            Why Choose Us
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              {
-                icon: User,
-                title: "Expert Doctors",
-                description:
-                  "Access to a network of experienced healthcare professionals",
-                bgColor: "bg-blue-100",
-                textColor: "text-blue-600",
-              },
-              {
-                icon: Clock,
-                title: "24/7 Support",
-                description:
-                  "Round-the-clock assistance for all your healthcare needs",
-                bgColor: "bg-green-100",
-                textColor: "text-green-600",
-              },
-              {
-                icon: CreditCard,
-                title: "Affordable Care",
-                description:
-                  "Quality healthcare services at competitive prices",
-                bgColor: "bg-yellow-100",
-                textColor: "text-yellow-600",
-              },
-              {
-                icon: Shield,
-                title: "Privacy & Security",
-                description:
-                  "Your health information is protected with state-of-the-art security measures",
-                bgColor: "bg-purple-100",
-                textColor: "text-purple-600",
-              },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="text-center p-3 bg-gray-50 rounded-lg transition-all duration-300 hover:shadow-md hover:bg-white max-w-sm mx-auto"
-              >
-                <div
-                  className={`mb-3 inline-flex p-2 rounded-full ${item.bgColor}`}
-                >
-                  <item.icon className={`w-6 h-6 ${item.textColor}`} />
-                </div>
-                <h3 className="text-md font-semibold mb-1">{item.title}</h3>
-                <p className="text-gray-600 text-sm">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section
-          className="mb-12 p-4 rounded-lg shadow-md"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(221,229,244,1) 0%, rgba(193,206,233,1) 52%, rgba(191,210,240,1) 100%)",
-          }}
-        >
-          <h2 className="text-3xl font-semibold mb-6 text-center">
-            Our Partnered Labs
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              {
-                name: "HealthLab",
-                logo: "/placeholder.svg?height=100&width=100",
-              },
-              {
-                name: "MediTest",
-                logo: "/placeholder.svg?height=100&width=100",
-              },
-              {
-                name: "BioAnalytics",
-                logo: "/placeholder.svg?height=100&width=100",
-              },
-              {
-                name: "GenomeX",
-                logo: "/placeholder.svg?height=100&width=100",
-              },
-            ].map((lab, index) => (
-              <div
-                key={index}
-                className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center justify-center"
-              >
-                <Image
-                  src={lab.logo}
-                  alt={lab.name}
-                  width={80}
-                  height={80}
-                  className="mb-2"
-                />
-                <h3 className="text-lg font-semibold text-center">
-                  {lab.name}
-                </h3>
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
+        </div>
+      ))}
     </div>
-  );
+  </div>
+</div>
+
+
+
+      {/* Second banner section with content pushed to the right */}
+      <div
+        className="relative w-full py-8 sm:py-12 md:py-16 lg:py-24 bg-cover bg-center bg-[#f2fbff]"
+        style={{
+          backgroundImage: "url('/banner6.png?height=1080&width=1920')",
+          '@media (maxWidth: 640px)': {
+            backgroundImage: "url('/banner5.png?height=1080&width=1920')"
+          }
+        }}
+      >
+        <div className="absolute inset-0"></div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-end">
+          <div className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2">
+            <div className="flex items-center mb-1 sm:mb-2">
+              <ChartNoAxesCombined className="mr-2 text-[#2e6da5] hover:text-[#1d4999]" />
+              <Link href="#" className="text-[#2e6da5] hover:text-[#1d4999] text-xs sm:text-sm md:text-base font-semibold inline-block leading-relaxed">
+                Explore Our Services
+              </Link>
+            </div>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#012b6d] mb-2 sm:mb-4 leading-snug">
+              Comprehensive Healthcare Solutions
+            </h2>
+            <p className="text-sm sm:text-base md:text-lg text-[#2e6da5] mb-4 sm:mb-6 md:mb-8 leading-relaxed">
+              We provide a wide range of medical services to ensure your health and well-being.
+            </p>
+
+            <div className="bg-[#012b6d] rounded-lg shadow-xl p-6 md:p-8 mb-12">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+    {[
+      { icon: FaHeart, title: "Consult a Doctor", description: "Expert care for your good health", link: '/coming-soon' },
+      { icon: FaMicroscope, title: "Diagnostic Tests", description: "Advanced diagnostic testing with affordability", link: "/diagnostics" },
+      { icon: Scissors, title: "Surgery Support", description: "Affordable Surgery Support at your fingertips", link: "/prescription" },
+      { icon: LayoutDashboard, title: "Dashboard", description: "Full-service Medication management", link: "/patient-dashboard" }
+    ].map((item, index) => (
+      <div key={index} className="flex items-start space-x-4 bubble-hover">
+        <item.icon className="w-8 h-8 text-[#2e6da5] flex-shrink-0" />
+        <div>
+          <h3 className="text-xl font-semibold text-white mb-2 leading-snug">{item.title}</h3>
+          <p className="text-gray-300 leading-relaxed">{item.description}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div className="flex justify-center">
+    <Link href="/coming-soon"> {/* Replace '/coming-soon' with your desired link */}
+      <a>
+        <Button
+          variant="default"
+          size="lg"
+          className="bg-[#2e6da5] hover:bg-[#1d4999] text-white font-semibold py-3 px-8 text-lg bubble-hover leading-relaxed"
+        >
+          Schedule an Appointment
+        </Button>
+      </a>
+    </Link>
+  </div>
+</div>
+          </div>
+        </div>
+      </div>
+
+
+<div className="bg-[#2e6da5] py-16 px-4 sm:px-6 lg:px-8">
+  <div className="max-w-7xl mx-auto">
+    <h2 className="text-3xl sm:text-4xl font-bold text-[#fefeff] mb-2 text-center flex items-center justify-center gap-2">
+      <Stethoscope className="w-8 h-8 text-[#fefeff]" />
+      Our Partnered Labs
+    </h2>
+    <p className="text-xl text-[#012b6d] mb-12 text-center">Collaborating with the best in medical diagnostics</p>
+
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+      {[
+        { name: "HealthTech Labs", description: "Cutting-edge diagnostic solutions" },
+        { name: "BioCore Analytics", description: "Precision in molecular testing" },
+        { name: "Vitality Diagnostics", description: "Comprehensive health screenings" },
+        { name: "GenomeWise", description: "Advanced genetic testing services" }
+      ].map((lab, index) => (
+        <div key={index} className="bg-[#012b6d] shadow-lg overflow-hidden">
+          <Image
+            src={`/placeholder.svg?height=150&width=300&text=Lab+Image+${index + 1}`}
+            alt={`${lab.name} image`}
+            width={300}
+            height={150}
+            className="w-full object-cover"
+          />
+          <div className="p-4">
+            <h3 className="text-lg font-semibold text-white mb-2">{lab.name}</h3>
+            <p className="text-sm text-[#fefeff]">{lab.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+    </div>
+  )
 }

@@ -71,220 +71,223 @@ export default function RootLayout({ children }) {
     description: 'Your trusted healthcare platform',
   }
 
+  const navItems = [
+    { href: "/", icon: Home, text: "Home" },
+    { href: "/#explore-services", icon: Compass, text: "Explore Services" },
+    { href: "/about", icon: Info, text: "About Us" },
+    { href: "/contact", icon: PhoneCall, text: "Contact Us" },
+  ]
+
   return (
     <html lang="en">
       <head>
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />
       </head>
-      <body className={`${inter.className} ${poppins.variable} min-h-screen flex flex-col`}>
-        <header className="bg-gradient-custom shadow-md">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between py-4 pr-2 flex-shrink-0">
-              <Link href="/" className="flex items-center">
-                <div className="flex items-center pl-4 pr-2 flex-shrink-0">
-                  <Image
-                    src="/iconfinale-removebg.png"
-                    alt="Kmh Logo"
-                    width={200}
-                    height={200}
-                    className="mb-1"
-                  />
-                </div>
-              </Link>
-              
-              <nav className="hidden md:flex items-center">
-                <div className="flex space-x-6">
-                  <Link href="/" className="text-black hover:text-gray-800 font-poppins font-normal text-sm transition-colors duration-200 ease-in-out hover:font-bold flex flex-col items-center justify-center w-24">
-                    <Home className="w-5 h-5 mb-1" />
-                    Home
-                  </Link>
-                  <Link href="/#explore-services" className="text-black hover:text-gray-800 font-poppins font-normal text-sm transition-colors duration-200 ease-in-out hover:font-bold flex flex-col items-center justify-center w-40">
-                    <Compass className="w-5 h-5 mb-1" />
-                    Explore Services
-                  </Link>
-                  <Link href="/about" className="text-black hover:text-gray-800 font-poppins font-normal text-sm transition-colors duration-200 ease-in-out hover:font-bold flex flex-col items-center justify-center w-24">
-                    <Info className="w-5 h-5 mb-1" />
-                    About Us
-                  </Link>
-                  <Link href="/contact" className="text-black hover:text-gray-800 font-poppins font-normal text-sm transition-colors duration-200 ease-in-out hover:font-bold flex flex-col items-center justify-center w-28">
-                    <PhoneCall className="w-5 h-5 mb-1" />
-                    Contact Us
-                  </Link>
-                </div>
-              </nav>
+      <body className={`${inter.className} ${poppins.variable} min-h-screen flex flex-col`} >
+      <header className="shadow-md">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-between py-4 pr-2 flex-shrink-0">
+      <Link href="/" className="flex items-center">
+        <div className="flex items-center pl-4 pr-2 flex-shrink-0">
+          <Image
+            src="/iconfinale1.png"
+            alt="Company logo"
+            width={200}
+            height={200}
+            className="mb-1"
+          />
+        </div>
+      </Link>
 
-              <div className="hidden md:flex items-center space-x-6">
-                <button className="p-2 rounded-full hover:bg-gray-200">
-                  <Bell className="w-6 h-6 text-black" />
-                </button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="p-2 rounded-full hover:bg-gray-200">
-                      <User className="h-6 w-6 text-black" />
-                      <span className="sr-only">Account menu</span>
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <Link href="/login" className="flex items-center w-full">
-                        Login
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link href="/signup" className="flex items-center w-full">
-                        Sign Up
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              
-              <button 
-                className="md:hidden p-2 rounded-full hover:bg-gray-200" 
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              >
-                {isMenuOpen ? (
-                  <X className="w-6 h-6 text-black" />
-                ) : (
-                  <Menu className="w-6 h-6 text-black" />
-                )}
-              </button>
-            </div>
-          </div>
-          
-          {/* Mobile menu */}
-          {isMenuOpen && (
-            <div className="md:hidden bg-white shadow-lg">
-              <nav className="flex flex-col py-2">
-                <Link href="/" className="px-4 py-2 text-black hover:bg-gray-100 font-poppins font-thin flex items-center">
-                  <Home className="w-5 h-5 mr-2" />
-                  Home
-                </Link>
-                <Link href="#explore-services" className="px-4 py-2 text-black hover:bg-gray-100 font-poppins font-thin flex items-center">
-                  <Compass className="w-5 h-5 mr-2" />
-                  Explore Services
-                </Link>
-                <Link href="/about" className="px-4 py-2 text-black hover:bg-gray-100 font-poppins font-thin flex items-center">
-                  <Info className="w-5 h-5 mr-2" />
-                  About Us
-                </Link>
-                <Link href="/contact" className="px-4 py-2 text-black hover:bg-gray-100 font-poppins font-thin flex items-center">
-                  <PhoneCall className="w-5 h-5 mr-2" />
-                  Contact Us
-                </Link>
-                <button className="px-4 py-2 text-black hover:bg-gray-100 font-poppins font-thin flex items-center w-full">
-                  <Bell className="w-5 h-5 mr-2" />
-                  Notifications
-                </button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="px-4 py-2 text-black hover:bg-gray-100 font-poppins font-thin flex items-center w-full">
-                      <User className="w-5 h-5 mr-2" />
-                      Account
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>
-                      <Link href="/login" className="flex items-center w-full">
-                        Login
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link href="/signup" className="flex items-center w-full">
-                        Sign Up
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </nav>
-            </div>
+      {/* Desktop Navigation Menu */}
+      <nav className="hidden md:flex items-center space-x-10">
+        <div className="flex space-x-10">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-[#2e6da5] hover:text-[#2e6da5] font-poppins font-normal text-sm transition-transform duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center w-auto"
+            >
+              <item.icon className="w-5 h-5 mr-2" strokeWidth={1.5} />
+              <span className="text-[15px]">{item.text}</span>
+            </Link>
+          ))}
+        </div>
+
+        {/* Notification Bell */}
+        <button className="p-2 rounded-full hover:bg-gray-200">
+          <Bell className="w-6 h-6 text-[#2e6da5] hover:text-[#2e6da5]" strokeWidth={1.5} />
+        </button>
+
+        {/* Profile Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="p-2 rounded-full hover:bg-gray-200">
+              <User className="h-6 w-6 text-[#2e6da5] hover:text-[#2e6da5]" strokeWidth={1.5} />
+              <span className="sr-only">Account menu</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>
+              <Link href="/login" className="flex items-center w-full">
+                Login
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href="/signup" className="flex items-center w-full">
+                Sign Up
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </nav>
+
+      {/* Mobile Menu Toggle Button */}
+      <div className="md:hidden">
+        <button
+          className="p-2 rounded-full hover:bg-gray-200"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+        >
+          {isMenuOpen ? (
+            <X className="w-6 h-6 text-[#2e6da5] hover:text-[#2e6da5]" strokeWidth={1.5} />
+          ) : (
+            <Menu className="w-6 h-6 text-[#2e6da5] hover:text-[#2e6da5]" strokeWidth={1.5} />
           )}
-        </header>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* Mobile Menu */}
+  {isMenuOpen && (
+    <div className="md:hidden bg-white shadow-lg">
+      <nav className="flex flex-col py-2">
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="px-4 py-2 text-[#2e6da5] hover:text-[#2e6da5] hover:bg-gray-100 font-poppins font-normal flex items-center text-[15px]"
+          >
+            <item.icon className="w-5 h-5 mr-2" strokeWidth={1.5} />
+            {item.text}
+          </Link>
+        ))}
+        <button className="px-4 py-2 text-[#2e6da5] hover:text-[#2e6da5] hover:bg-gray-100 font-poppins font-normal flex items-center text-[15px] w-full">
+          <Bell className="w-5 h-5 mr-2" strokeWidth={1.5} />
+          Notifications
+        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="px-4 py-2 text-[#2e6da5] hover:text-[#2e6da5] hover:bg-gray-100 font-poppins font-normal flex items-center text-[15px] w-full">
+              <User className="w-5 h-5 mr-2" strokeWidth={1.5} />
+              Account
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>
+              <Link href="/login" className="flex items-center w-full">
+                Login
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href="/signup" className="flex items-center w-full">
+                Sign Up
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </nav>
+    </div>
+  )}
+</header>
+
 
         {/* Search bar and location */}
-        <div className="bg-white shadow-md">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div 
-                  className={`relative flex items-center w-full h-12 rounded-lg transition-all duration-300 ease-in-out ${
-                    isFocused ? 'bg-[rgba(191,210,240,1)] shadow-lg' : 'bg-gray-100'
-                  }`}
-                >
-                  <div className="flex items-center flex-shrink-0 px-4 border-r border-gray-300 h-full">
-                    <MapPin className="h-6 w-6 text-gray-500 mr-2" />
-                    <span className="text-sm text-gray-700 whitespace-nowrap">
-                      {error ? error : location}
-                    </span>
-                  </div>
-                  <div className="relative flex-grow flex items-stretch h-full">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Search className="h-6 w-6 text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      name="search"
-                      id="search"
-                      className="block w-full pl-12 pr-4 py-2 text-lg bg-transparent border-0 focus:outline-none focus:ring-0 placeholder-sm"
-                      placeholder="Search for healthcare services..."
-                      onFocus={() => setIsFocused(true)}
-                      onBlur={() => setIsFocused(false)}
-                    />
-                  </div>
-                </div>
-              </div>
+        <div className="bg-white text-white shadow-md">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="flex items-center justify-between ">
+      <div className="flex-1">
+        <div 
+          className={`relative flex items-center w-full h-10 rounded-lg transition-all duration-300 ease-in-out 
+            ${isFocused ? 'bg-[#8fa5cc] shadow-lg border-none text-white' : 'bg-white border border-[#012b6d] text-gray-300'}
+            hover:shadow-lg hover:border-[#012b6d]`}
+        >
+          <div className="flex items-center flex-shrink-0 px-4 border-r border-gray-500 h-full">
+            <MapPin className="h-6 w-6 text-gray-500 mr-2" strokeWidth={1.5} />
+            <span className="text-sm text-gray-700 whitespace-nowrap">
+              {error ? error : location}
+            </span>
+          </div>
+          <div className="relative flex-grow flex items-stretch h-full">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search className="h-6 w-6 text-gray-400" strokeWidth={1.5} />
             </div>
+            <input
+              type="text"
+              name="search"
+              id="search"
+              className="block w-full pl-12 pr-4 py-2 text-lg bg-transparent border-0 focus:outline-none focus:ring-0 placeholder-sm"
+              placeholder="Search for healthcare services..."
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+            />
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
         
         <main className="flex-grow bg-gray-100">
           {children}
         </main>
 
-        <footer className="bg-gradient-custom text-black py-8">
+        <footer className="bg-[#f2fbff] text-[#2e6da5] py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div>
-                <h3 className="text-lg font-semibold mb-4">About Us</h3>
+                <h3 className="text-lg font-semibold text-[#012b6d] mb-4">About Us</h3>
                 <ul className="space-y-2">
-                  <li><Link href="#" className="hover:text-gray-300">Our Story</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">Team</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">Careers</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">Press</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Our Story</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Team</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Careers</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Press</Link></li>
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-4">Services</h3>
+                <h3 className="text-lg font-semibold text-[#012b6d] mb-4">Services</h3>
                 <ul className="space-y-2">
-                  <li><Link href="#" className="hover:text-gray-300">Consultations</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">Lab Tests</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">Diagnostics</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">Surgery Support</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Consultations</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Lab Tests</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Diagnostics</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Surgery Support</Link></li>
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-4">Support</h3>
+                <h3 className="text-lg font-semibold text-[#012b6d] mb-4">Support</h3>
                 <ul className="space-y-2">
-                  <li><Link href="#" className="hover:text-gray-300">FAQs</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">Contact Us</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">Privacy Policy</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">Terms of Service</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">FAQs</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Contact Us</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Privacy Policy</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Terms of Service</Link></li>
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-4">Connect</h3>
+                <h3 className="text-lg font-semibold text-[#012b6d] mb-4">Connect</h3>
                 <ul className="space-y-2">
-                  <li><Link href="#" className="hover:text-gray-300">Facebook</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">Twitter</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">Instagram</Link></li>
-                  <li><Link href="#" className="hover:text-gray-300">LinkedIn</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Facebook</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Twitter</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">Instagram</Link></li>
+                  <li><Link href="#" className="hover:text-[#012b6d]">LinkedIn</Link></li>
                 </ul>
               </div>
             </div>
-            <div className="mt-8 border-t border-gray-700 pt-8 text-center">
-              <p>&copy; 2024 Know My Health. All rights reserved.</p>
+            <div className="mt-8 border-t-2 border-[#012b6d] pt-8 text-center">
+              <p className='text-[#012b6d]'>&copy; 2024 Know My Health. All rights reserved.</p>
             </div>
           </div>
         </footer>
