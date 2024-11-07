@@ -1,42 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/config/dbconnect";
-import Prescription from "../../models/prescription";
+import Prescription from "@/models/prescription";
 
-/*
-Test with:
-curl -X POST http://localhost:3000/api/get-prescription \
-  -H "Content-Type: application/json" \
-  -d '{
-    "userId": "USER123"
-  }'
-
-OR
-
-curl -X POST http://localhost:3000/api/get-prescription \
-  -H "Content-Type: application/json" \
-  -d '{
-    "doctorId": "DOC456"
-  }'
-
-Response will be an array of prescriptions like:
-[
-  {
-    "prescriptionId": "PRESC789",
-    "userId": "USER123",
-    "doctorId": "DOC456", 
-    "name": "John Doe",
-    "age": 35,
-    "specialization": "Cardiology",
-    "phone": "+919876543210",
-    "email": "john.doe@example.com",
-    "image": {
-      "url": "https://example.com/prescription1.jpg",
-      "filename": "prescription1.jpg"
-    },
-    "current": "2024-01-20T10:30:00.000Z"
-  }
-]
-*/
 export async function POST(req) {
   const { id, who } = await req.json();
   console.log(

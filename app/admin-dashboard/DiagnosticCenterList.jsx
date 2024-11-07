@@ -1,82 +1,84 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { Trash2, Plus } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import AddTestForm from './add-test'
-import AddPackageForm from './add-package'
-import Image from 'next/image'
+import React, { useState, useEffect } from "react";
+import { Trash2, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import AddTestForm from "@/app/admin-dashboard/add-test";
+import AddPackageForm from "@/app/admin-dashboard/add-package";
+import Image from "next/image";
 
 const DiagnosticCenterList = ({ onSelectCenter }) => {
-  const [diagnosticCenters, setDiagnosticCenters] = useState([])
-  const [showForm, setShowForm] = useState(false)
-  const [formType, setFormType] = useState('test')
-  const [selectedCenterId, setSelectedCenterId] = useState(null)
+  const [diagnosticCenters, setDiagnosticCenters] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [formType, setFormType] = useState("test");
+  const [selectedCenterId, setSelectedCenterId] = useState(null);
 
   useEffect(() => {
-    fetchDiagnosticCenters()
-  }, [])
+    fetchDiagnosticCenters();
+  }, []);
 
   const fetchDiagnosticCenters = async () => {
     try {
-      const response = await fetch('/api/diagnosticcenter')
+      const response = await fetch("/api/diagnosticcenter");
       if (response.ok) {
-        const data = await response.json()
-        setDiagnosticCenters(data)
+        const data = await response.json();
+        setDiagnosticCenters(data);
       } else {
-        console.error('Failed to fetch diagnostic centers')
+        console.error("Failed to fetch diagnostic centers");
       }
     } catch (error) {
-      console.error('Error fetching diagnostic centers:', error)
+      console.error("Error fetching diagnostic centers:", error);
     }
-  }
+  };
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch('/api/diagnosticcenter', {
-        method: 'DELETE',
+      const response = await fetch("/api/diagnosticcenter", {
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ id }),
-      })
+      });
 
       if (response.ok) {
         // Remove the deleted center from the state
-        setDiagnosticCenters(prevCenters => prevCenters.filter(center => center.id !== id))
-        console.log('Diagnostic center deleted successfully')
+        setDiagnosticCenters((prevCenters) =>
+          prevCenters.filter((center) => center.id !== id)
+        );
+        console.log("Diagnostic center deleted successfully");
       } else {
-        const errorData = await response.json()
-        console.error('Failed to delete diagnostic center:', errorData.error)
+        const errorData = await response.json();
+        console.error("Failed to delete diagnostic center:", errorData.error);
       }
     } catch (error) {
-      console.error('Error deleting diagnostic center:', error)
+      console.error("Error deleting diagnostic center:", error);
     }
-  }
+  };
 
   const handleAddTest = (id) => {
-    setSelectedCenterId(id)
-    setFormType('test')
-    setShowForm(true)
-  }
+    setSelectedCenterId(id);
+    setFormType("test");
+    setShowForm(true);
+  };
 
   const handleAddPackage = (id) => {
-    setSelectedCenterId(id)
-    setFormType('package')
-    setShowForm(true)
-  }
+    setSelectedCenterId(id);
+    setFormType("package");
+    setShowForm(true);
+  };
 
   const handleCloseForm = () => {
-    setShowForm(false)
-    setSelectedCenterId(null)
-  }
+    setShowForm(false);
+    setSelectedCenterId(null);
+  };
 
   return (
     <div className="grid gap-4">
       {diagnosticCenters.map((center) => (
-        <div 
-          key={center.id} 
+        <div
+          key={center.id}
           className="flex items-center justify-between bg-white rounded-lg shadow-md p-4 hover:bg-gray-50 cursor-pointer"
           onClick={() => onSelectCenter(center.id)}
         >
@@ -94,12 +96,18 @@ const DiagnosticCenterList = ({ onSelectCenter }) => {
             </div>
             <div>
               <h3 className="text-lg font-semibold">{center.name}</h3>
-              <p className="text-gray-600">{center.address}, {center.city}, {center.state} - {center.pincode}</p>
+              <p className="text-gray-600">
+                {center.address}, {center.city}, {center.state} -{" "}
+                {center.pincode}
+              </p>
               <p className="text-gray-600">Phone: {center.phoneNo.value}</p>
               <p className="text-gray-600">Rating: {center.rating}/5</p>
-              <p className="text-gray-600">Services: 
-                {center.services.homeSampleCollection ? ' Home Sample Collection' : ''}
-                {center.services.onlineReports ? ' Online Reports' : ''}
+              <p className="text-gray-600">
+                Services:
+                {center.services.homeSampleCollection
+                  ? " Home Sample Collection"
+                  : ""}
+                {center.services.onlineReports ? " Online Reports" : ""}
               </p>
               <div className="mt-2">
                 <p className="text-gray-600 font-semibold">Specialities:</p>
@@ -109,18 +117,23 @@ const DiagnosticCenterList = ({ onSelectCenter }) => {
                       {speciality}
                     </Badge>
                   ))}
-                  {center.tests && center.tests.map((test, index) => (
-                    test.speciality && (
-                      <Badge key={`test-${index}`} variant="secondary">
-                        {test.speciality}
-                      </Badge>
-                    )
-                  ))}
+                  {center.tests &&
+                    center.tests.map(
+                      (test, index) =>
+                        test.speciality && (
+                          <Badge key={`test-${index}`} variant="secondary">
+                            {test.speciality}
+                          </Badge>
+                        )
+                    )}
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex items-center space-x-4" onClick={e => e.stopPropagation()}>
+          <div
+            className="flex items-center space-x-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Button
               variant="outline"
               size="sm"
@@ -154,18 +167,25 @@ const DiagnosticCenterList = ({ onSelectCenter }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">
-              Add {formType.charAt(0).toUpperCase() + formType.slice(1)} to {diagnosticCenters.find(c => c.id === selectedCenterId)?.name}
+              Add {formType.charAt(0).toUpperCase() + formType.slice(1)} to{" "}
+              {diagnosticCenters.find((c) => c.id === selectedCenterId)?.name}
             </h2>
-            {formType === 'test' ? (
-              <AddTestForm onClose={handleCloseForm} diagnosticCenterId={selectedCenterId} />
+            {formType === "test" ? (
+              <AddTestForm
+                onClose={handleCloseForm}
+                diagnosticCenterId={selectedCenterId}
+              />
             ) : (
-              <AddPackageForm onClose={handleCloseForm} diagnosticCenterId={selectedCenterId} />
+              <AddPackageForm
+                onClose={handleCloseForm}
+                diagnosticCenterId={selectedCenterId}
+              />
             )}
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default DiagnosticCenterList
+export default DiagnosticCenterList;

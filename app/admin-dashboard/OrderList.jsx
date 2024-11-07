@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import ViewOrder from "./ViewOrder";
+import ViewOrder from "@/app/admin-dashboard/ViewOrder";
 
 export default function OrderList({ onSelectOrder }) {
   const [orders, setOrders] = useState([]);
@@ -20,9 +20,9 @@ export default function OrderList({ onSelectOrder }) {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch('/api/orders/all-orders');
+        const response = await fetch("/api/orders/all-orders");
         if (!response.ok) {
-          throw new Error('Failed to fetch orders');
+          throw new Error("Failed to fetch orders");
         }
         const data = await response.json();
         setOrders(data);
@@ -73,7 +73,12 @@ export default function OrderList({ onSelectOrder }) {
   if (error) return <div>Error: {error}</div>;
 
   if (selectedOrderId) {
-    return <ViewOrder orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} />;
+    return (
+      <ViewOrder
+        orderId={selectedOrderId}
+        onBack={() => setSelectedOrderId(null)}
+      />
+    );
   }
 
   return (
@@ -104,7 +109,9 @@ export default function OrderList({ onSelectOrder }) {
                 </Badge>
               </TableCell>
               <TableCell>
-                <Badge variant={getPaymentStatusBadgeVariant(order.paymentStatus)}>
+                <Badge
+                  variant={getPaymentStatusBadgeVariant(order.paymentStatus)}
+                >
                   {order.paymentStatus}
                 </Badge>
               </TableCell>

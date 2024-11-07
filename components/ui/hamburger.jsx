@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { IoChevronBack } from "react-icons/io5";
 import { MdOutlineMoveToInbox } from "react-icons/md";
-import AdminCards from "./admin-cards";
+import AdminCards from "@/app/admin-dashboard/AdminCards";
 
 export default function Hamburger() {
   const [isOpen, setIsOpen] = useState(false);

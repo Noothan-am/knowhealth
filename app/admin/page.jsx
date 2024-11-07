@@ -1,4 +1,4 @@
-import Hamburger from "../../components/ui/hamburger";
+import Hamburger from "@/components/ui/hamburger";
 
 export default function AdminPage() {
   return (
