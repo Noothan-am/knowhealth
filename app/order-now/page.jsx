@@ -1,5 +1,5 @@
 "use client";
-
+import { Suspense } from "react";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -20,7 +20,7 @@ import {
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function OrderNowPage() {
+function OrderFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const testId = searchParams.get("testId");
@@ -403,5 +403,13 @@ export default function OrderNowPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function OrderNowPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto px-4 py-8">Loading...</div>}>
+      <OrderFormContent />
+    </Suspense>
   );
 }

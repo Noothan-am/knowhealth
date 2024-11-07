@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle, View } from "lucide-react";
 import DoctorList from "@/app/admin-dashboard/DoctorList";
 import DiagnosticCenterList from "@/app/admin-dashboard/DiagnosticCenterList";
-import AddTestSpecialityList from "@/app/admin-dashboard/AddTestSpecialityList"; // Corrected import path
+import AddTestSpecialityList from "@/app/admin-dashboard/AddTestSpecialitylist"; // Corrected import path
 import AddDoctorForm from "@/app/admin-dashboard/AddDoctorForm";
 import AddDiagnosticCenterForm from "@/app/admin-dashboard/AddDiagnosticCenterForm";
 import DiagnosticCenterDetails from "@/app/admin-dashboard/DiagnosticCenterDetails";

@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -18,7 +19,7 @@ import {
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 
-export default function ConfirmationPage() {
+function ConfirmationContent() {
   const [order, setOrder] = useState(null);
   const [center, setCenter] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState("pending");
@@ -279,5 +280,13 @@ export default function ConfirmationPage() {
       </Card>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
     </div>
+  );
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ConfirmationContent />
+    </Suspense>
   );
 }
