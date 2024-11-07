@@ -26,17 +26,22 @@ function ConfirmationContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const orderId = searchParams.get("orderId");
-  const [userId] = useState("9d3e6c23-8bed-44ea-af69-aa6f831e7dd3");
+  // const [userId] = useState("9d3e6c23-8bed-44ea-af69-aa6f831e7dd3");
 
   useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role === null || role != "consumer") {
+      window.location.href = "/login";
+    }
     const fetchOrderAndCenter = async () => {
+      const data = JSON.parse(localStorage.getItem("Data"));
       try {
         const orderResponse = await fetch("/api/orders/get-orders", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId }),
+          body: JSON.stringify({ userId: data.id }),
         });
 
         if (!orderResponse.ok) {
@@ -70,7 +75,7 @@ function ConfirmationContent() {
     if (orderId) {
       fetchOrderAndCenter();
     }
-  }, [orderId, userId]);
+  }, [orderId, data]);
 
   const initializeRazorpay = () => {
     return new Promise((resolve) => {
