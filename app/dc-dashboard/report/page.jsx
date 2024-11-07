@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ const createReportSchema = z.object({
   comments: z.string().optional()
 });
 
-export default function ReportForm() {
+function ReportFormContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const orderId = searchParams.get('orderId');
@@ -225,5 +226,13 @@ export default function ReportForm() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function ReportForm() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ReportFormContent />
+    </Suspense>
   );
 }

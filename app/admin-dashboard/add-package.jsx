@@ -25,10 +25,16 @@ const packageSchema = z.object({
   testCount: z.number().min(1, "Package must include at least one test"),
   price: z.number().min(0, "Price must be a positive number"),
   description: z.string().optional(),
-  image: z.instanceof(FileList).optional(),
+  image: z.any().optional(),
   specialities: z.array(z.string()).min(1, "Select at least one speciality"),
   tests: z.array(z.string()).min(1, "Enter at least one test"),
 })
+const handleFileInput = (e) => {
+  if (typeof window === 'undefined') return null;
+  const files = e.target.files;
+  if (!files || files.length === 0) return null;
+  return files;
+};
 
 const AddPackageForm = ({ onClose, diagnosticCenterId }) => {
   const { toast } = useToast()
@@ -61,7 +67,7 @@ const AddPackageForm = ({ onClose, diagnosticCenterId }) => {
     }
 
     fetchSpecialities()
-  }, [])
+  }, [toast])
 
   const form = useForm({
     resolver: zodResolver(packageSchema),
@@ -311,7 +317,12 @@ const AddPackageForm = ({ onClose, diagnosticCenterId }) => {
                 <Input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => onChange(e.target.files)}
+                  onChange={(e) => {
+                    const files = handleFileInput(e);
+                    if (files) {
+                      onChange(files);
+                    }
+                  }}
                   {...rest}
                 />
               </FormControl>

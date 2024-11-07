@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -108,7 +110,11 @@ const AddDiagnosticCenterForm = ({ onClose }) => {
   });
 
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    if (typeof window === 'undefined') return;
+    const files = handleFileInput(e);
+    if (files) {
+      setImage(files[0]);
+    }
   };
 
   const onSubmit = async (data) => {

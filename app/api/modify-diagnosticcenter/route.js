@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { dbConnect } from "@/config/dbconnect";
+import  dbConnect  from "@/config/dbconnect";
 import DiagnosticCenter from "@/models/diagnosticCenter";
 import { NextResponse } from "next/server";
 

@@ -50,7 +50,7 @@ export default function MedicalDiagnosticsPage() {
       setCurrentBanner((prev) => (prev + 1) % banners.length)
     }, 5000)
     return () => clearInterval(timer)
-  }, [])
+  }, [banners.length])
 
   useEffect(() => {
     if (diagnosticCategories.length > 0) {

@@ -30,7 +30,7 @@ const testSchema = z.object({
   price: z.number().min(0, "Price must be a positive number"),
   description: z.string().optional(),
   speciality: z.string(),
-  image: z.instanceof(FileList).optional(),
+  image: z.any().optional(),
 })
 
 const AddTestForm = ({ onClose, diagnosticCenterId }) => {
@@ -47,6 +47,13 @@ const AddTestForm = ({ onClose, diagnosticCenterId }) => {
       speciality: "",
     },
   })
+
+  const handleFileInput = (e) => {
+    if (typeof window === 'undefined') return null;
+    const files = e.target.files;
+    if (!files || files.length === 0) return null;
+    return files;
+  };
 
   useEffect(() => {
     const fetchSpecialitiesAndTests = async () => {
@@ -81,7 +88,7 @@ const AddTestForm = ({ onClose, diagnosticCenterId }) => {
     }
 
     fetchSpecialitiesAndTests()
-  }, [])
+  }, [toast])
 
   const onSubmit = async (values) => {
     try {
@@ -231,7 +238,12 @@ const AddTestForm = ({ onClose, diagnosticCenterId }) => {
                 <Input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => onChange(e.target.files)}
+                  onChange={(e) => {
+                    const files = handleFileInput(e);
+                    if (files) {
+                      onChange(files);
+                    }
+                  }}
                   {...rest}
                 />
               </FormControl>

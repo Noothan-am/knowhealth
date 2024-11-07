@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense } from "react";
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +20,8 @@ import {
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 
-export default function ViewOrderPage() {
+// Create a wrapper component for the search params
+function ViewOrderContent() {
   const [order, setOrder] = useState(null);
   const [center, setCenter] = useState(null);
   const searchParams = useSearchParams();
@@ -214,5 +217,14 @@ export default function ViewOrderPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// Main component with proper Suspense boundary
+export default function ViewOrderPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto p-4">Loading...</div>}>
+      <ViewOrderContent />
+    </Suspense>
   );
 }

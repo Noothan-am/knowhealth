@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-export default function ViewReport() {
+function ViewReportContent() {
   const searchParams = useSearchParams();
   const reportId = searchParams.get('reportId');
   
@@ -118,5 +118,17 @@ export default function ViewReport() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function ViewReport() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    }>
+      <ViewReportContent />
+    </Suspense>
   );
 }
