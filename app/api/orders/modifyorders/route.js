@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { dbConnect } from "@/config/dbconnect";
+import  dbConnect  from "@/config/dbconnect";
 import Order from "@/models/orders";
 import { NextResponse } from "next/server";
 

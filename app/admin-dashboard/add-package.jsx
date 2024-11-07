@@ -61,7 +61,7 @@ const AddPackageForm = ({ onClose, diagnosticCenterId }) => {
     }
 
     fetchSpecialities()
-  }, [])
+  }, [toast])
 
   const form = useForm({
     resolver: zodResolver(packageSchema),

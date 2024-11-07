@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -68,6 +68,7 @@ export default function ViewReport() {
   }
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="container mx-auto p-6">
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
@@ -118,5 +119,6 @@ export default function ViewReport() {
         </CardContent>
       </Card>
     </div>
+    </Suspense>
   );
 }

@@ -81,7 +81,7 @@ const AddTestForm = ({ onClose, diagnosticCenterId }) => {
     }
 
     fetchSpecialitiesAndTests()
-  }, [])
+  }, [toast])
 
   const onSubmit = async (values) => {
     try {

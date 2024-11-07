@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/config/dbconnect";
-import Prescription from "../../models/prescription";
+import Prescription from "@/models/prescription";
 
 /*
 Test with:
@@ -41,7 +41,7 @@ export async function POST(req) {
   const { id, who } = await req.json();
   console.log(
     "Fetching prescriptions for:",
-    userId ? `User ${id}` : `Doctor ${who}`
+    who !== "doctor" ? `User ${id}` : `Doctor ${id}`
   );
 
   try {
