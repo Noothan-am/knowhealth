@@ -1,6 +1,6 @@
-import Banner from './Banner'
-import SpecialistsSection from './SpecialistsSection'
-import HealthConcernsSection from './HealthConcernsSection'
+import Banner from "@/app/Healthconsultation/Banner";
+import SpecialistsSection from "@/app/Healthconsultation/SpecialistsSection";
+import HealthConcernsSection from "@/app/Healthconsultation/HealthConcernsSection";
 
 export default function Page() {
   return (
@@ -9,5 +9,5 @@ export default function Page() {
       <SpecialistsSection />
       <HealthConcernsSection />
     </div>
-  )
+  );
 }

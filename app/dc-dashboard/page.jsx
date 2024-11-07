@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Beaker, FileText, Users, Search, Download, Plus } from "lucide-react";
 import Image from "next/image";
-import AddTestForm from "../admin-dashboard/add-test";
-import AddPackageForm from "../admin-dashboard/add-package";
+import AddTestForm from "@/app/admin-dashboard/add-test";
+import AddPackageForm from "@/app/admin-dashboard/add-package";
 import {
   Table,
   TableBody,
@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import ViewOrder from "../admin-dashboard/ViewOrder";
+import ViewOrder from "@/app/admin-dashboard/ViewOrder";
 import { useRouter } from "next/navigation";
 
 // WhiteCard component

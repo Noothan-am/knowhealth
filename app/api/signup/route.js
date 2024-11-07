@@ -3,7 +3,7 @@ import User from "@/models/users";
 import Doctor from "@/models/doctors";
 import dbConnect from "@/config/dbconnect";
 import bcrypt from "bcrypt";
-import { handleFile } from "../prescription";
+import { handleFile } from "@/app/api/prescription";
 
 export async function POST(request) {
   await dbConnect();
