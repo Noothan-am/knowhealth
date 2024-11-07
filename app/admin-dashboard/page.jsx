@@ -3,15 +3,15 @@ import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, View } from "lucide-react";
-import DoctorList from "./DoctorList.jsx";
-import DiagnosticCenterList from "./DiagnosticCenterList.jsx";
-import AddTestSpecialityList from "./AddTestSpecialityList.jsx";
-import AddDoctorForm from "./AddDoctorForm.jsx";
-import AddDiagnosticCenterForm from "./AddDiagnosticCenterForm.jsx";
-import DiagnosticCenterDetails from "./DiagnosticCenterDetails.jsx";
-import PrescriptionList from "../view-prescription/page.jsx";
-import ViewOrder from "./ViewOrder.jsx";
-import OrderList from "./OrderList.jsx";
+import DoctorList from "@/app/admin-dashboard/DoctorList";
+import DiagnosticCenterList from "@/app/admin-dashboard/DiagnosticCenterList";
+import AddTestSpecialityList from "@/app/admin-dashboard/AddTestSpecialityList";
+import AddDoctorForm from "@/app/admin-dashboard/AddDoctorForm";
+import AddDiagnosticCenterForm from "@/app/admin-dashboard/AddDiagnosticCenterForm";
+import DiagnosticCenterDetails from "@/app/admin-dashboard/DiagnosticCenterDetails";
+import PrescriptionList from "@/app/view-prescription/page";
+import ViewOrder from "@/app/admin-dashboard/ViewOrder";
+import OrderList from "@/app/admin-dashboard/OrderList";
 
 const AdminDashboard = () => {
   const [showAddDoctor, setShowAddDoctor] = useState(false);
