@@ -24,10 +24,15 @@ export default function ViewOrderPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const orderId = searchParams.get("orderId");
-  const [userId] = useState("9d3e6c23-8bed-44ea-af69-aa6f831e7dd3");
 
   useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role === null || role != "consumer") {
+      window.location.href = "/login";
+    }
     const fetchOrderAndCenter = async () => {
+      const data = JSON.parse(localStorage.getItem("Data"));
+      const userId = data.id;
       try {
         // Fetch order details
         const orderResponse = await fetch("/api/orders/get-orders", {

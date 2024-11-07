@@ -89,6 +89,7 @@ export default function DashboardWithCard() {
     }
     const fetchOrders = async () => {
       const data = JSON.parse(localStorage.getItem("Data"));
+
       try {
         const response = await fetch("/api/orders/get-orders", {
           method: "POST",
@@ -117,6 +118,12 @@ export default function DashboardWithCard() {
   }, []);
 
   useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role === null || role != "diagnostics-admin") {
+      window.location.href = "/login";
+    }
+    const data = JSON.parse(localStorage.getItem("Data"));
+
     const fetchReports = async () => {
       try {
         const response = await fetch("/api/reports/get-reports", {
@@ -125,7 +132,7 @@ export default function DashboardWithCard() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            diagnosticCenterId: "58bf0384-33a5-4059-9cfd-68a274a25716",
+            diagnosticCenterId: data.id,
           }),
         });
 
