@@ -39,12 +39,16 @@ export default function OrderNowPage() {
   const [paymentMethod, setPaymentMethod] = useState("online");
   const [loading, setLoading] = useState(true);
   const [showOrderForm, setShowOrderForm] = useState(false);
-  const [userId] = useState("9d3e6c23-8bed-44ea-af69-aa6f831e7dd3");
+  // const [userId] = useState("9d3e6c23-8bed-44ea-af69-aa6f831e7dd3");
   const [patientName, setPatientName] = useState("");
   const [patientAge, setPatientAge] = useState("");
   const [patientPhoneNumber, setPatientPhoneNumber] = useState("");
 
   useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role === null || role != "consumer") {
+      window.location.href = "/login";
+    }
     const fetchDetails = async () => {
       try {
         const centerResponse = await fetch("/api/get-diagnosticcenter/id", {
@@ -82,11 +86,12 @@ export default function OrderNowPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const data = JSON.parse(localStorage.getItem("Data"));
 
-    console.log("Submitting with userId:", userId);
+    console.log("Submitting with userId:", data.id);
 
     const orderData = {
-      userId: userId,
+      userId: data.id,
       diagnosticCenterId: diagnosticCenterId,
       test: {
         type: "test",
