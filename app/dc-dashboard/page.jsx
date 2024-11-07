@@ -11,9 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Beaker, FileText, Users, Search, Download, Plus } from "lucide-react";
-import Image from 'next/image';
-import AddTestForm from '../admin-dashboard/add-test';
-import AddPackageForm from '../admin-dashboard/add-package';
+import Image from "next/image";
+import AddTestForm from "../admin-dashboard/add-test";
+import AddPackageForm from "../admin-dashboard/add-package";
 import {
   Table,
   TableBody,
@@ -23,7 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import ViewOrder from "../admin-dashboard/ViewOrder";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 // WhiteCard component
 function WhiteCard({ children, className = "" }) {
@@ -38,7 +38,7 @@ export default function DashboardWithCard() {
   const [center, setCenter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [formType, setFormType] = useState('test');
+  const [formType, setFormType] = useState("test");
   const [orders, setOrders] = useState([]);
   const [orderLoading, setOrderLoading] = useState(true);
   const [orderError, setOrderError] = useState(null);
@@ -49,44 +49,59 @@ export default function DashboardWithCard() {
   const router = useRouter();
 
   useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role === null || role != "diagnostics-admin") {
+      window.location.href = "/login";
+    }
     const fetchCenterDetails = async () => {
+      const data = JSON.parse(localStorage.getItem("Data"));
+
       try {
-        const response = await fetch('/api/get-diagnosticcenter/id', {
-          method: 'POST',
+        const response = await fetch("/api/get-diagnosticcenter/id", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ centerId: '58bf0384-33a5-4059-9cfd-68a274a25716' }),
-        })
+          body: JSON.stringify({
+            centerId: data.id,
+          }),
+        });
         if (response.ok) {
-          const data = await response.json()
-          setCenter(data)
+          const data = await response.json();
+          setCenter(data);
         } else {
-          console.error('Failed to fetch diagnostic center details')
+          console.error("Failed to fetch diagnostic center details");
         }
       } catch (error) {
-        console.error('Error fetching diagnostic center details:', error)
+        console.error("Error fetching diagnostic center details:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchCenterDetails()
-  }, [])
+    fetchCenterDetails();
+  }, []);
 
   useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role === null || role != "diagnostics-admin") {
+      window.location.href = "/login";
+    }
     const fetchOrders = async () => {
+      const data = JSON.parse(localStorage.getItem("Data"));
       try {
-        const response = await fetch('/api/orders/get-orders', {
-          method: 'POST',
+        const response = await fetch("/api/orders/get-orders", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ diagnosticCenterId: '58bf0384-33a5-4059-9cfd-68a274a25716' }),
+          body: JSON.stringify({
+            diagnosticCenterId: data.id,
+          }),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch orders');
+          throw new Error("Failed to fetch orders");
         }
 
         const data = await response.json();
@@ -104,22 +119,24 @@ export default function DashboardWithCard() {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await fetch('/api/reports/get-reports', {
-          method: 'POST',
+        const response = await fetch("/api/reports/get-reports", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ diagnosticCenterId: '58bf0384-33a5-4059-9cfd-68a274a25716' }),
+          body: JSON.stringify({
+            diagnosticCenterId: "58bf0384-33a5-4059-9cfd-68a274a25716",
+          }),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch reports');
+          throw new Error("Failed to fetch reports");
         }
 
         const data = await response.json();
         setReports(data);
       } catch (err) {
-        console.error('Error fetching reports:', err);
+        console.error("Error fetching reports:", err);
         // We're not setting an error state here, as we want to show the create report option for orders without reports
       } finally {
         setReportLoading(false);
@@ -130,11 +147,11 @@ export default function DashboardWithCard() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   if (!center) {
-    return <div>Center not found</div>
+    return <div>Center not found</div>;
   }
 
   const handleViewOrder = (orderId) => {
@@ -207,11 +224,11 @@ export default function DashboardWithCard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {
-                  center.appointments ? center.appointments.filter(
-                    (a) => a.date === new Date().toISOString().split("T")[0]
-                  ).length : 0
-                }
+                {center.appointments
+                  ? center.appointments.filter(
+                      (a) => a.date === new Date().toISOString().split("T")[0]
+                    ).length
+                  : 0}
               </div>
             </CardContent>
           </Card>
@@ -224,7 +241,9 @@ export default function DashboardWithCard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {center.reports ? center.reports.filter((r) => r.status !== "Ready").length : 0}
+                {center.reports
+                  ? center.reports.filter((r) => r.status !== "Ready").length
+                  : 0}
               </div>
             </CardContent>
           </Card>
@@ -233,17 +252,21 @@ export default function DashboardWithCard() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-semibold">Center Details</h2>
           <div className="flex space-x-2">
-            <Button onClick={() => {
-              setFormType('test')
-              setShowForm(true)
-            }}>
+            <Button
+              onClick={() => {
+                setFormType("test");
+                setShowForm(true);
+              }}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Test
             </Button>
-            <Button onClick={() => {
-              setFormType('package')
-              setShowForm(true)
-            }}>
+            <Button
+              onClick={() => {
+                setFormType("package");
+                setShowForm(true);
+              }}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Package
             </Button>
@@ -256,9 +279,7 @@ export default function DashboardWithCard() {
             {center.services.homeSampleCollection && (
               <Badge>Home Sample Collection</Badge>
             )}
-            {center.services.onlineReports && (
-              <Badge>Online Reports</Badge>
-            )}
+            {center.services.onlineReports && <Badge>Online Reports</Badge>}
           </div>
         </div>
 
@@ -267,7 +288,9 @@ export default function DashboardWithCard() {
             <h3 className="font-semibold mb-2">Certifications:</h3>
             <div className="flex flex-wrap gap-2">
               {center.certifications.map((cert, index) => (
-                <Badge key={index} variant="outline">{cert}</Badge>
+                <Badge key={index} variant="outline">
+                  {cert}
+                </Badge>
               ))}
             </div>
           </div>
@@ -278,7 +301,9 @@ export default function DashboardWithCard() {
             <h3 className="font-semibold mb-2">Accreditations:</h3>
             <div className="flex flex-wrap gap-2">
               {center.accreditations.map((accr, index) => (
-                <Badge key={index} variant="outline">{accr}</Badge>
+                <Badge key={index} variant="outline">
+                  {accr}
+                </Badge>
               ))}
             </div>
           </div>
@@ -308,10 +333,14 @@ export default function DashboardWithCard() {
                   <h3 className="font-semibold">{test.name}</h3>
                   <p className="text-gray-600">Price: ₹{test.price}</p>
                   {test.description && (
-                    <p className="text-gray-600 text-sm mt-1">{test.description}</p>
+                    <p className="text-gray-600 text-sm mt-1">
+                      {test.description}
+                    </p>
                   )}
                   {test.speciality && (
-                    <Badge className="mt-2" variant="secondary">{test.speciality}</Badge>
+                    <Badge className="mt-2" variant="secondary">
+                      {test.speciality}
+                    </Badge>
                   )}
                 </div>
               ))}
@@ -333,14 +362,20 @@ export default function DashboardWithCard() {
                   )}
                   <h3 className="font-semibold">{pkg.name}</h3>
                   <p className="text-gray-600">Price: ₹{pkg.price}</p>
-                  <p className="text-gray-600">Tests Included: {pkg.testCount}</p>
+                  <p className="text-gray-600">
+                    Tests Included: {pkg.testCount}
+                  </p>
                   {pkg.description && (
-                    <p className="text-gray-600 text-sm mt-1">{pkg.description}</p>
+                    <p className="text-gray-600 text-sm mt-1">
+                      {pkg.description}
+                    </p>
                   )}
                   {pkg.specialities?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {pkg.specialities.map((spec, index) => (
-                        <Badge key={index} variant="secondary">{spec}</Badge>
+                        <Badge key={index} variant="secondary">
+                          {spec}
+                        </Badge>
                       ))}
                     </div>
                   )}
@@ -354,7 +389,10 @@ export default function DashboardWithCard() {
             ) : orderError ? (
               <div>Error: {orderError}</div>
             ) : selectedOrderId ? (
-              <ViewOrder orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} />
+              <ViewOrder
+                orderId={selectedOrderId}
+                onBack={() => setSelectedOrderId(null)}
+              />
             ) : (
               <div className="rounded-md border">
                 <Table>
@@ -373,7 +411,9 @@ export default function DashboardWithCard() {
                   <TableBody>
                     {orders.map((order) => (
                       <TableRow key={order.id}>
-                        <TableCell className="font-medium">{order.id}</TableCell>
+                        <TableCell className="font-medium">
+                          {order.id}
+                        </TableCell>
                         <TableCell>{order.patientName}</TableCell>
                         <TableCell>{order.item.name}</TableCell>
                         <TableCell>₹{order.totalAmount}</TableCell>
@@ -383,7 +423,11 @@ export default function DashboardWithCard() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={getPaymentStatusBadgeVariant(order.paymentStatus)}>
+                          <Badge
+                            variant={getPaymentStatusBadgeVariant(
+                              order.paymentStatus
+                            )}
+                          >
                             {order.paymentStatus}
                           </Badge>
                         </TableCell>
@@ -426,14 +470,20 @@ export default function DashboardWithCard() {
                   </TableHeader>
                   <TableBody>
                     {orders.map((order) => {
-                      const report = reports.find(r => r.orderId === order.id);
+                      const report = reports.find(
+                        (r) => r.orderId === order.id
+                      );
                       return (
                         <TableRow key={order.id}>
-                          <TableCell className="font-medium">{order.id}</TableCell>
+                          <TableCell className="font-medium">
+                            {order.id}
+                          </TableCell>
                           <TableCell>{order.patientName}</TableCell>
                           <TableCell>{order.item.name}</TableCell>
                           <TableCell>
-                            {new Date(order.appointmentDate).toLocaleDateString()}
+                            {new Date(
+                              order.appointmentDate
+                            ).toLocaleDateString()}
                           </TableCell>
                           <TableCell>
                             {report ? (
@@ -447,7 +497,11 @@ export default function DashboardWithCard() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => router.push(`/dc-dashboard/view-report/?reportId=${report.id}`)}
+                                onClick={() =>
+                                  router.push(
+                                    `/dc-dashboard/view-report/?reportId=${report.id}`
+                                  )
+                                }
                               >
                                 View Report
                               </Button>
@@ -476,12 +530,19 @@ export default function DashboardWithCard() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">
-              Add {formType.charAt(0).toUpperCase() + formType.slice(1)} to {center.name}
+              Add {formType.charAt(0).toUpperCase() + formType.slice(1)} to{" "}
+              {center.name}
             </h2>
-            {formType === 'test' ? (
-              <AddTestForm onClose={() => setShowForm(false)} diagnosticCenterId={center.id} />
+            {formType === "test" ? (
+              <AddTestForm
+                onClose={() => setShowForm(false)}
+                diagnosticCenterId={center.id}
+              />
             ) : (
-              <AddPackageForm onClose={() => setShowForm(false)} diagnosticCenterId={center.id} />
+              <AddPackageForm
+                onClose={() => setShowForm(false)}
+                diagnosticCenterId={center.id}
+              />
             )}
           </div>
         </div>
