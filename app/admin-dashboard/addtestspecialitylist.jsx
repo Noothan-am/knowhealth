@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Button } from "@/components/ui/button"
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,72 +13,72 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const addSpecialitySchema = z.object({
   name: z.string().min(2, "Speciality name must be at least 2 characters"),
 });
 
 const addTestToSpecialitySchema = z.object({
-  specialityName: z.string().min(2, "Speciality name must be at least 2 characters"),
+  specialityName: z
+    .string()
+    .min(2, "Speciality name must be at least 2 characters"),
   test: z.object({
     name: z.string().min(2, "Test name must be at least 2 characters"),
-    description: z.string().min(2, "Description must be at least 2 characters")
-  })
+    description: z.string().min(2, "Description must be at least 2 characters"),
+  }),
 });
 
-
-
 const AddTestSpecialityList = ({ onClose }) => {
-  const { toast } = useToast()
-  const [activeTab, setActiveTab] = useState("add-speciality")
-  const [specialities, setSpecialities] = useState([])
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("add-speciality");
+  const [specialities, setSpecialities] = useState([]);
 
   useEffect(() => {
     const fetchSpecialities = async () => {
       try {
-        const response = await fetch('/api/testspeciality/speciality')
+        const response = await fetch("/api/testspeciality/speciality");
         if (response.ok) {
-          const data = await response.json()
-          setSpecialities(data)
+          const data = await response.json();
+          setSpecialities(data);
         } else {
           toast({
             title: "Error",
             description: "Failed to fetch specialities",
             variant: "destructive",
-          })
+          });
         }
       } catch (error) {
         toast({
-          title: "Error", 
+          title: "Error",
           description: "Error fetching specialities",
           variant: "destructive",
-        })
+        });
       }
-    }
+    };
 
-    fetchSpecialities()
-  }, [toast])
+    fetchSpecialities();
+  }, [toast]);
 
   const specialityForm = useForm({
     resolver: zodResolver(addSpecialitySchema),
     defaultValues: {
       name: "",
-    }
-  })
+    },
+  });
 
   const testForm = useForm({
     resolver: zodResolver(addTestToSpecialitySchema),
@@ -86,81 +86,85 @@ const AddTestSpecialityList = ({ onClose }) => {
       specialityName: "",
       test: {
         name: "",
-        description: ""
-      }
-    }
-  })
+        description: "",
+      },
+    },
+  });
 
   const onSubmitSpeciality = async (values) => {
     try {
-      const response = await fetch('/api/testspeciality/speciality', {
-        method: 'PUT',
+      const response = await fetch("/api/testspeciality/speciality", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to add speciality')
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add speciality");
       }
 
-      const data = await response.json()
+      const data = await response.json();
       toast({
         title: "Success",
         description: data.message || "Speciality added successfully",
-      })
-      specialityForm.reset()
+      });
+      specialityForm.reset();
       // Refresh the specialities list
-      const updatedSpecialities = await fetch('/api/testspeciality/speciality').then(res => res.json())
-      setSpecialities(updatedSpecialities)
+      const updatedSpecialities = await fetch(
+        "/api/testspeciality/speciality"
+      ).then((res) => res.json());
+      setSpecialities(updatedSpecialities);
     } catch (error) {
       toast({
         title: "Error",
         description: error.message || "Failed to add speciality",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const onSubmitTest = async (values) => {
     try {
       const formData = new FormData();
-      formData.append('data', JSON.stringify(values));
-      if (testForm.getValues('image')) {
-        formData.append('image', testForm.getValues('image')[0]);
+      formData.append("data", JSON.stringify(values));
+      if (testForm.getValues("image")) {
+        formData.append("image", testForm.getValues("image")[0]);
       }
       console.log(formData);
 
-      const response = await fetch('/api/testspeciality', {
-        method: 'PUT',
+      const response = await fetch("/api/testspeciality", {
+        method: "PUT",
         body: formData,
-      })
+      });
       console.log(response);
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to add test to speciality')
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add test to speciality");
       }
 
-      const data = await response.json()
+      const data = await response.json();
       toast({
-        title: "Success", 
+        title: "Success",
         description: data.message || "Test added to speciality successfully",
-      })
-      testForm.reset()
+      });
+      testForm.reset();
       // Refresh the specialities list
-      const updatedSpecialities = await fetch('/api/testspeciality/speciality').then(res => res.json())
-      setSpecialities(updatedSpecialities)
+      const updatedSpecialities = await fetch(
+        "/api/testspeciality/speciality"
+      ).then((res) => res.json());
+      setSpecialities(updatedSpecialities);
     } catch (error) {
       toast({
         title: "Error",
         description: error.message || "Failed to add test to speciality",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="flex">
@@ -173,7 +177,9 @@ const AddTestSpecialityList = ({ onClose }) => {
             <ScrollArea className="h-[500px] pr-4">
               {specialities.map((item) => (
                 <div key={item.specialities.name} className="mb-4">
-                  <h3 className="text-lg font-semibold">{item.specialities.name}</h3>
+                  <h3 className="text-lg font-semibold">
+                    {item.specialities.name}
+                  </h3>
                   <ul className="list-disc list-inside">
                     {item.specialities.tests.map((test, index) => (
                       <li key={index}>{test.name}</li>
@@ -194,7 +200,10 @@ const AddTestSpecialityList = ({ onClose }) => {
 
           <TabsContent value="add-speciality">
             <Form {...specialityForm}>
-              <form onSubmit={specialityForm.handleSubmit(onSubmitSpeciality)} className="space-y-8">
+              <form
+                onSubmit={specialityForm.handleSubmit(onSubmitSpeciality)}
+                className="space-y-8"
+              >
                 <FormField
                   control={specialityForm.control}
                   name="name"
@@ -223,14 +232,20 @@ const AddTestSpecialityList = ({ onClose }) => {
 
           <TabsContent value="add-test">
             <Form {...testForm}>
-              <form onSubmit={testForm.handleSubmit(onSubmitTest)} className="space-y-8">
+              <form
+                onSubmit={testForm.handleSubmit(onSubmitTest)}
+                className="space-y-8"
+              >
                 <FormField
                   control={testForm.control}
                   name="specialityName"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Speciality Name</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a speciality" />
@@ -238,7 +253,10 @@ const AddTestSpecialityList = ({ onClose }) => {
                         </FormControl>
                         <SelectContent>
                           {specialities.map((item) => (
-                            <SelectItem key={item.specialities.name} value={item.specialities.name}>
+                            <SelectItem
+                              key={item.specialities.name}
+                              value={item.specialities.name}
+                            >
                               {item.specialities.name}
                             </SelectItem>
                           ))}
@@ -274,7 +292,10 @@ const AddTestSpecialityList = ({ onClose }) => {
                     <FormItem>
                       <FormLabel>Test Description</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Enter test description" {...field} />
+                        <Textarea
+                          placeholder="Enter test description"
+                          {...field}
+                        />
                       </FormControl>
                       <FormDescription>
                         A brief description of the test.
@@ -290,7 +311,11 @@ const AddTestSpecialityList = ({ onClose }) => {
                     <FormItem>
                       <FormLabel>Test Image</FormLabel>
                       <FormControl>
-                        <Input type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files)} />
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => field.onChange(e.target.files)}
+                        />
                       </FormControl>
                       <FormDescription>
                         Upload an image for the test (optional).
@@ -311,7 +336,7 @@ const AddTestSpecialityList = ({ onClose }) => {
         </Tabs>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddTestSpecialityList
+export default AddTestSpecialityList;
