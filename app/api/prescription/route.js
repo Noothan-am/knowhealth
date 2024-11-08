@@ -16,7 +16,9 @@ export async function POST(request) {
       { status: 500 }
     );
   }
-  const { response } = uploadPrescription(finalUrl, formData);
+  const { response } = await uploadPrescription(finalUrl, formData);
+  console.log({ response });
+
   if (!response) {
     return NextResponse.json(
       { error: "Failed to add in database" },

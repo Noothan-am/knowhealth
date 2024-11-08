@@ -48,11 +48,11 @@ export async function handleFile(formData) {
       console.log("File uploaded successfully");
       return { finalUrl, success: true };
     } else {
-      console.error("Failed to upload file");
+      console.log("Failed to upload file");
       return { finalUrl, success: false };
     }
   } catch (err) {
-    console.error(err);
+    console.log(err);
     return { finalUrl, success: false };
   }
 }
