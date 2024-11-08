@@ -66,6 +66,15 @@ export default function PrescriptionList() {
     fetchPrescription();
   }, [selectedPrescription]);
 
+  const downloadReport = (reportUrl) => {
+    const link = document.createElement("a");
+    link.href = reportUrl;
+    link.download = "Prescription_Report.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">All Prescriptions</h1>
@@ -190,9 +199,15 @@ export default function PrescriptionList() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">MRI_Report_123.pdf</span>
+                        <span className="text-sm">Prescription_Report.pdf</span>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          downloadReport(selectedPrescription?.reportUrl)
+                        }
+                      >
                         <Download className="mr-2 h-4 w-4" />
                         Download Report
                       </Button>
